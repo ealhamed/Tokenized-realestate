@@ -51,6 +51,7 @@ body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xm
 
 /* NAV */
 nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:0.75rem 1.25rem;display:flex;justify-content:space-between;align-items:center;backdrop-filter:blur(20px);background:#060F0A;border-bottom:1px solid rgba(0,200,83,0.1);transition:all 0.3s}
+nav::before{content:'';position:absolute;bottom:100%;left:0;right:0;height:50px;background:#060F0A}
 nav.scrolled{padding:0.5rem 1.25rem}
 .nav-logo{font-family:var(--font-display);font-size:1rem;font-weight:700;color:var(--green);letter-spacing:-0.02em;white-space:nowrap}
 .nav-links{display:flex;gap:1.25rem;align-items:center}
