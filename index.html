@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Developer Exit Accelerator — Business Case</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #060F0A;
+  --bg2: #0A1A14;
+  --card: #0F2318;
+  --card2: #132E1F;
+  --green: #00C853;
+  --green-dim: #00C85340;
+  --dgreen: #1B5E20;
+  --gold: #FFD54F;
+  --gold-dim: #FFD54F30;
+  --dgold: #D4A843;
+  --white: #F0F4F2;
+  --light: #CFD8DC;
+  --gray: #90A4AE;
+  --red: #EF5350;
+  --orange: #FFA726;
+  --blue: #42A5F5;
+  --teal: #00897B;
+  --purple: #AB47BC;
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--light);
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+
+::selection { background: var(--green-dim); color: var(--white); }
+
+/* NOISE OVERLAY */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* SCROLL ANIMATIONS */
+.reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-left {
+  opacity: 0;
+  transform: translateX(-60px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal-left.visible { opacity: 1; transform: translateX(0); }
+.reveal-right {
+  opacity: 0;
+  transform: translateX(60px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal-right.visible { opacity: 1; transform: translateX(0); }
+.reveal-scale {
+  opacity: 0;
+  transform: scale(0.9);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal-scale.visible { opacity: 1; transform: scale(1); }
+
+/* STAGGER CHILDREN */
+.stagger > * { transition-delay: calc(var(--i, 0) * 0.1s); }
+
+/* NAV */
+nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  backdrop-filter: blur(20px);
+  background: rgba(6, 15, 10, 0.85);
+  border-bottom: 1px solid rgba(0, 200, 83, 0.1);
+  transition: all 0.3s;
+}
+nav.scrolled { padding: 0.6rem 2rem; }
+.nav-logo {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--green);
+  letter-spacing: -0.02em;
+}
+.nav-links { display: flex; gap: 1.5rem; }
+.nav-links a {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--gray);
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  transition: color 0.3s;
+}
+.nav-links a:hover { color: var(--green); }
+.nav-badge {
+  font-size: 0.65rem;
+  padding: 0.25rem 0.6rem;
+  background: var(--gold-dim);
+  color: var(--gold);
+  border-radius: 100px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+/* SECTIONS */
+section { padding: 6rem 2rem; max-width: 1200px; margin: 0 auto; position: relative; }
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--green);
+  margin-bottom: 0.5rem;
+  display: block;
+}
+h2 {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-weight: 900;
+  color: var(--white);
+  line-height: 1.15;
+  margin-bottom: 1.5rem;
+  letter-spacing: -0.02em;
+}
+h2 em { font-style: normal; color: var(--gold); }
+h3 {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  color: var(--white);
+  margin-bottom: 1rem;
+}
+p.lead { font-size: 1.15rem; color: var(--gray); line-height: 1.7; max-width: 700px; }
+.source { font-size: 0.7rem; color: #607D8B; font-style: italic; margin-top: 1.5rem; }
+
+/* HERO */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-top: 6rem;
+  position: relative;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0; right: -20%; width: 70%; height: 70%;
+  background: radial-gradient(ellipse at center, var(--green-dim) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  color: var(--green);
+  margin-bottom: 1.5rem;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.3s forwards;
+}
+.hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 7vw, 5.5rem);
+  font-weight: 900;
+  color: var(--white);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  margin-bottom: 1.5rem;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.5s forwards;
+}
+.hero h1 span { color: var(--green); }
+.hero-sub {
+  font-size: 1.3rem;
+  color: var(--gray);
+  max-width: 600px;
+  margin-bottom: 2rem;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.7s forwards;
+}
+.hero-meta {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.9s forwards;
+}
+.hero-meta span { font-size: 0.85rem; color: var(--gray); }
+.hero-meta .conf { color: var(--dgold); font-weight: 600; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* STAT STRIP */
+.stat-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: rgba(0, 200, 83, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 3rem 0;
+}
+.stat-strip .stat {
+  background: var(--card);
+  padding: 2rem 1.5rem;
+  text-align: center;
+  transition: background 0.3s;
+}
+.stat-strip .stat:hover { background: var(--card2); }
+.stat-strip .stat-val {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 900;
+  color: var(--green);
+  display: block;
+  margin-bottom: 0.3rem;
+}
+.stat-strip .stat-label {
+  font-size: 0.8rem;
+  color: var(--gray);
+  line-height: 1.4;
+}
+
+/* BIG QUOTE */
+.big-quote {
+  background: var(--dgreen);
+  padding: 3rem;
+  border-radius: 12px;
+  margin: 3rem 0;
+  position: relative;
+  overflow: hidden;
+}
+.big-quote::before {
+  content: '';
+  position: absolute;
+  top: -50%; right: -20%;
+  width: 60%; height: 200%;
+  background: radial-gradient(ellipse, rgba(0,200,83,0.15), transparent);
+  pointer-events: none;
+}
+.big-quote p {
+  font-family: var(--font-display);
+  font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+  font-weight: 700;
+  color: var(--gold);
+  line-height: 1.4;
+  position: relative;
+}
+
+/* CARDS */
+.cards { display: grid; gap: 1.5rem; }
+.cards-2 { grid-template-columns: repeat(2, 1fr); }
+.cards-3 { grid-template-columns: repeat(3, 1fr); }
+.cards-4 { grid-template-columns: repeat(4, 1fr); }
+.cards-5 { grid-template-columns: repeat(5, 1fr); }
+
+.card {
+  background: var(--card);
+  border-radius: 12px;
+  padding: 2rem;
+  border: 1px solid rgba(0,200,83,0.08);
+  transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+.card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(0,200,83,0.2);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+}
+.card-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--green);
+  margin-bottom: 0.75rem;
+}
+.card-val {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 900;
+  color: var(--white);
+  margin-bottom: 0.5rem;
+}
+.card-desc { font-size: 0.9rem; color: var(--gray); line-height: 1.5; }
+
+.card-red { border-color: rgba(239,83,80,0.2); }
+.card-red:hover { border-color: rgba(239,83,80,0.4); }
+.card-red .card-label { color: var(--red); }
+
+.card-gold { border-color: rgba(255,213,79,0.15); background: var(--dgreen); }
+.card-gold:hover { border-color: rgba(255,213,79,0.3); }
+.card-gold .card-label { color: var(--gold); }
+
+/* STEPS */
+.steps {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.75rem;
+  position: relative;
+  margin: 2rem 0;
+}
+.steps::before {
+  content: '';
+  position: absolute;
+  top: 28px;
+  left: 5%;
+  right: 5%;
+  height: 2px;
+  background: linear-gradient(to right, var(--green), var(--gold), var(--green));
+  opacity: 0.3;
+}
+.step {
+  text-align: center;
+  position: relative;
+}
+.step-num {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background: var(--green);
+  color: var(--bg);
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+  position: relative;
+  z-index: 2;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.step:hover .step-num { transform: scale(1.15); box-shadow: 0 0 30px var(--green-dim); }
+.step:nth-child(3) .step-num { background: var(--gold); }
+.step-title {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--white);
+  margin-bottom: 0.5rem;
+}
+.step-desc { font-size: 0.8rem; color: var(--gray); line-height: 1.5; }
+
+/* TABLE */
+.data-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: 2rem 0;
+  font-size: 0.85rem;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.data-table th {
+  background: var(--dgreen);
+  color: var(--white);
+  padding: 0.9rem 1rem;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.data-table th:last-child, .data-table th:nth-last-child(2) { color: var(--gold); background: #1a4520; }
+.data-table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid rgba(0,200,83,0.06);
+  color: var(--light);
+  background: var(--card);
+  transition: background 0.2s;
+}
+.data-table tr:hover td { background: var(--card2); }
+.data-table td:first-child { color: var(--gray); font-weight: 500; }
+.data-table td:last-child, .data-table td:nth-last-child(2) { background: rgba(27,94,32,0.15); }
+
+/* FLOW DIAGRAM */
+.flow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 2rem 0;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.flow-box {
+  padding: 1rem 1.5rem;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-align: center;
+  min-width: 160px;
+}
+.flow-arrow { color: var(--gray); font-size: 1.5rem; }
+
+/* COMPARISON COLUMNS */
+.compare-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 2rem 0; }
+.compare-col {
+  border-radius: 12px;
+  padding: 2rem;
+  position: relative;
+}
+.compare-col.go { background: var(--card); border: 1px solid rgba(0,200,83,0.15); }
+.compare-col.wait { background: var(--card); border: 1px solid rgba(239,83,80,0.15); }
+.compare-col h3 {
+  font-size: 1.2rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid;
+}
+.compare-col.go h3 { color: var(--green); border-color: var(--green); }
+.compare-col.wait h3 { color: var(--red); border-color: var(--red); }
+.compare-col li {
+  list-style: none;
+  padding: 0.5rem 0;
+  padding-left: 1.5rem;
+  position: relative;
+  font-size: 0.9rem;
+  color: var(--light);
+}
+.compare-col li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.85rem;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+.compare-col.go li::before { background: var(--green); }
+.compare-col.wait li::before { background: var(--red); }
+
+/* PILLARS */
+.pillars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin: 2rem 0; }
+.pillar {
+  background: var(--card);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform 0.3s;
+}
+.pillar:hover { transform: translateY(-4px); }
+.pillar-header {
+  padding: 1rem;
+  text-align: center;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--white);
+}
+.pillar:nth-child(1) .pillar-header { background: var(--green); }
+.pillar:nth-child(2) .pillar-header { background: var(--dgold); color: var(--bg); }
+.pillar:nth-child(3) .pillar-header { background: var(--teal); }
+.pillar-body { padding: 1.5rem; font-size: 0.88rem; color: var(--light); line-height: 1.7; }
+
+/* CTA */
+.cta {
+  background: var(--dgreen);
+  border-radius: 16px;
+  padding: 3rem;
+  text-align: center;
+  margin: 3rem 0;
+  position: relative;
+  overflow: hidden;
+}
+.cta::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent 40%, rgba(0,200,83,0.1));
+  pointer-events: none;
+}
+.cta h3 {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  color: var(--gold);
+  margin-bottom: 0.5rem;
+}
+.cta p { font-size: 0.9rem; color: var(--gray); }
+
+/* KILL/VALIDATE */
+.kv { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 2rem 0; }
+.kv-box { border-radius: 10px; padding: 1.5rem; }
+.kv-box.kill { background: rgba(62, 17, 17, 0.6); border: 1px solid rgba(239,83,80,0.2); }
+.kv-box.validate { background: rgba(27,94,32,0.3); border: 1px solid rgba(0,200,83,0.2); }
+.kv-box h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.75rem; }
+.kv-box.kill h4 { color: var(--red); }
+.kv-box.validate h4 { color: var(--green); }
+.kv-box li { list-style: none; font-size: 0.85rem; color: var(--light); padding: 0.3rem 0; }
+
+/* DIVIDER */
+.divider {
+  width: 60px;
+  height: 3px;
+  background: var(--green);
+  margin: 2rem 0;
+  border-radius: 2px;
+}
+
+/* FOOTER */
+footer {
+  padding: 3rem 2rem;
+  text-align: center;
+  color: var(--gray);
+  font-size: 0.8rem;
+  border-top: 1px solid var(--card2);
+}
+
+/* COUNTER ANIMATION */
+.counter { display: inline-block; }
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  section { padding: 4rem 1.25rem; }
+  .stat-strip, .cards-4, .cards-5 { grid-template-columns: repeat(2, 1fr); }
+  .steps { grid-template-columns: repeat(3, 1fr); }
+  .steps::before { display: none; }
+  .compare-cols, .kv, .pillars { grid-template-columns: 1fr; }
+  .cards-3 { grid-template-columns: 1fr; }
+  .nav-links { display: none; }
+  .data-table { font-size: 0.75rem; }
+  .data-table th, .data-table td { padding: 0.5rem; }
+}
+@media (max-width: 600px) {
+  .stat-strip { grid-template-columns: 1fr 1fr; }
+  .steps { grid-template-columns: 1fr 1fr; }
+  .cards-2 { grid-template-columns: 1fr; }
+}
+
+/* HYPOTHESIS BADGE */
+.hypothesis {
+  display: inline-block;
+  padding: 0.3rem 0.8rem;
+  background: rgba(42, 26, 0, 0.8);
+  color: var(--dgold);
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: 6px;
+  margin-top: 0.5rem;
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="nav-logo">Developer Exit Accelerator</div>
+  <div class="nav-links">
+    <a href="#opportunity">Opportunity</a>
+    <a href="#problem">Problem</a>
+    <a href="#solution">Solution</a>
+    <a href="#competition">Competition</a>
+    <a href="#revenue">Revenue</a>
+    <a href="#decision">Decision</a>
+    <span class="nav-badge">CONFIDENTIAL</span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-eyebrow">Business Case &mdash; March 2026</div>
+  <h1>Developer Exit<br><span>Accelerator</span></h1>
+  <p class="hero-sub">Fractional real estate ownership platform built on REGA tokenization infrastructure. Developers pay for speed. Investors pay nothing upfront.</p>
+  <div class="hero-meta">
+    <span class="conf">CONFIDENTIAL</span>
+    <span>Riyadh, Saudi Arabia</span>
+  </div>
+</section>
+
+<!-- OPPORTUNITY -->
+<section id="opportunity">
+  <span class="section-label reveal">01 — The Opportunity</span>
+  <h2 class="reveal">Saudi Arabia has a<br><em>SAR 2.3 Trillion</em> real estate market<br>with a <em>305,000 unit housing gap</em></h2>
+  <p class="lead reveal">in Riyadh alone through 2034. The government just built tokenization infrastructure that nobody has used for developer exit yet. That's the gap.</p>
+
+  <div class="stat-strip reveal stagger">
+    <div class="stat" style="--i:0"><span class="stat-val counter" data-target="135" data-prefix="$" data-suffix="B">$0B</span><span class="stat-label">RE contracts<br>2020–2025</span></div>
+    <div class="stat" style="--i:1"><span class="stat-val">4.7%</span><span class="stat-label">Riyadh pop.<br>growth/yr</span></div>
+    <div class="stat" style="--i:2"><span class="stat-val">9</span><span class="stat-label">Platforms in<br>REGA sandbox</span></div>
+    <div class="stat" style="--i:3"><span class="stat-val">Nov 2025</span><span class="stat-label">First tokenized<br>RE transaction</span></div>
+  </div>
+  <p class="source reveal">Sources: Knight Frank Saudi Arabia 2025; JLL Riyadh Residential Report 2024; REGA PropTech Sandbox records</p>
+</section>
+
+<!-- MARKET SIZE -->
+<section>
+  <span class="section-label reveal">02 — Market Size</span>
+  <h2 class="reveal">TAM / SAM / SOM</h2>
+
+  <div class="stat-strip reveal">
+    <div class="stat"><span class="stat-val">SAR 2.3T</span><span class="stat-label">Total RE market value</span></div>
+    <div class="stat"><span class="stat-val">$78.6B</span><span class="stat-label">Construction market</span></div>
+    <div class="stat"><span class="stat-val" style="color:var(--gold)">305K</span><span class="stat-label">Riyadh unit gap</span></div>
+    <div class="stat"><span class="stat-val" style="color:var(--gold)">115K/yr</span><span class="stat-label">Annual demand</span></div>
+  </div>
+
+  <div class="cards cards-3 reveal stagger">
+    <div class="card" style="--i:0">
+      <div class="card-label">TAM</div>
+      <div class="card-val">SAR 50B+</div>
+      <p class="card-desc">All newly developed residential units in Saudi Arabia. ~100,000+ units/year at avg SAR 500K.</p>
+    </div>
+    <div class="card" style="--i:1">
+      <div class="card-label">SAM</div>
+      <div class="card-val">SAR 10–15B</div>
+      <p class="card-desc">Units developers struggle to sell quickly. ~20,000–30,000 units/year.</p>
+      <span class="hypothesis">⚠ Hypothesis — to validate via developer interviews</span>
+    </div>
+    <div class="card card-gold" style="--i:2">
+      <div class="card-label">SOM (Year 1–3)</div>
+      <div class="card-val">SAR 50–150M</div>
+      <p class="card-desc">Riyadh residential only. Target: 100–300 units in first 3 years.</p>
+    </div>
+  </div>
+  <p class="source reveal">Sources: NHC National Housing Report 2024; Knight Frank; JLL Saudi Arabia Residential Market 2024. SAM estimate pending developer interviews.</p>
+</section>
+
+<!-- DEVELOPER PAIN -->
+<section id="problem">
+  <span class="section-label reveal">03 — The Developer's Pain</span>
+  <h2 class="reveal">Selling what they build<br>costs <em>14–28%</em></h2>
+  <p class="lead reveal">What it costs a developer to sell a SAR 500K apartment today:</p>
+
+  <div class="cards cards-2 reveal" style="margin:2rem 0">
+    <div>
+      <table class="data-table">
+        <thead><tr><th>Cost Item</th><th>Amount</th><th>%</th></tr></thead>
+        <tbody>
+          <tr><td>Brokerage commission (Fal)</td><td>SAR 12,500</td><td>2.5%</td></tr>
+          <tr><td>Vacancy holding (3–6 mo)</td><td>SAR 25K–50K</td><td>5–10%</td></tr>
+          <tr><td>Marketing spend</td><td>SAR 10K–30K</td><td>2–6%</td></tr>
+          <tr><td>Price discounts</td><td>SAR 25K–50K</td><td>5–10%</td></tr>
+          <tr style="font-weight:700"><td style="color:var(--red)">TOTAL</td><td style="color:var(--red)">SAR 70K–140K</td><td style="color:var(--red)">14–28%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="cards" style="grid-template-columns:1fr 1fr;gap:1rem">
+      <div class="card card-red">
+        <div class="card-label">Today</div>
+        <div class="card-val" style="color:var(--red)">14–28%</div>
+        <p class="card-desc">3–6 months<br>Uncertain outcome<br>Price erosion</p>
+      </div>
+      <div class="card card-gold">
+        <div class="card-label">Us</div>
+        <div class="card-val" style="color:var(--green)">4–5%</div>
+        <p class="card-desc">&lt;14 days<br>Full price<br>Developer pays us</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="big-quote reveal">
+    <p>Developer saves SAR 50K–115K per unit AND gets paid in days, not months.</p>
+  </div>
+
+  <div class="card reveal" style="margin-top:1.5rem;background:var(--card2)">
+    <div class="card-label">Why this pain is structural</div>
+    <p class="card-desc">Banks lend to mega-projects (NEOM, ROSHN, The Red Sea). SME developers building 10–100 unit projects compete for the same pool of individual buyers who need mortgages and take months to close. Riyadh has 305,000 units of unmet demand — but the buyers are fragmented, slow, and mortgage-dependent. The demand exists; the conversion mechanism doesn't.</p>
+  </div>
+</section>
+
+<!-- INVESTOR PAIN -->
+<section>
+  <span class="section-label reveal">04 — The Investor's Pain</span>
+  <h2 class="reveal">Locked out of <em>real estate</em></h2>
+  <p class="lead reveal">Millions of Saudis want real estate exposure but can't afford it.</p>
+
+  <div class="cards cards-4 reveal stagger" style="margin:2rem 0">
+    <div class="card card-red" style="--i:0"><div class="card-label">Buy an apartment</div><p class="card-desc">SAR 400–700K<br>10–20% down + mortgage<br>Most can't qualify</p></div>
+    <div class="card" style="--i:1;border-color:rgba(255,167,38,0.2)"><div class="card-label" style="color:var(--orange)">REITs</div><p class="card-desc">Liquid but impersonal<br>You don't know which building you own</p></div>
+    <div class="card" style="--i:2;border-color:rgba(255,167,38,0.2)"><div class="card-label" style="color:var(--orange)">Fractional platforms</div><p class="card-desc">8–9% upfront cost<br>SAR 3,000+ minimum<br>3–5 year lockup</p></div>
+    <div class="card card-red" style="--i:3"><div class="card-label">Bank deposits</div><p class="card-desc">3–4% returns<br>Below inflation<br>No real asset backing</p></div>
+  </div>
+
+  <div class="big-quote reveal" style="background:var(--dgreen)">
+    <p>What we offer instead</p>
+  </div>
+
+  <div class="stat-strip reveal" style="margin-top:0">
+    <div class="stat"><span class="stat-val" style="color:var(--green)">SAR 1,000</span><span class="stat-label">Entry cost</span></div>
+    <div class="stat"><span class="stat-val" style="color:var(--green)">~5%</span><span class="stat-label">Upfront (RETT only)</span></div>
+    <div class="stat"><span class="stat-val" style="color:var(--green)">0%</span><span class="stat-label">Exit fee</span></div>
+    <div class="stat"><span class="stat-val" style="color:var(--green)">12.5%*</span><span class="stat-label">Expected annual</span></div>
+  </div>
+  <p class="source reveal">*12.5% = 7.5% net rental + 5% capital appreciation, based on HissaTech Al-Tahawul deal (Riyadh, 100% funded in 15 days)</p>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="solution">
+  <span class="section-label reveal">05 — How It Works</span>
+  <h2 class="reveal">Five steps to becoming<br>a <em>micro-landlord</em></h2>
+
+  <div class="steps reveal stagger">
+    <div class="step" style="--i:0"><div class="step-num">1</div><div class="step-title">Developer lists unit</div><div class="step-desc">Newly built, tenanted apartment. Developer wants fast exit.</div></div>
+    <div class="step" style="--i:1"><div class="step-num">2</div><div class="step-title">We fractionalize</div><div class="step-desc">Unit split into shares. Registered on title deed or SPV.</div></div>
+    <div class="step" style="--i:2"><div class="step-num">3</div><div class="step-title">You invest SAR 1K</div><div class="step-desc">Buy your fraction. Become a micro-landlord.</div></div>
+    <div class="step" style="--i:3"><div class="step-num">4</div><div class="step-title">Receive monthly rent</div><div class="step-desc">Tenant pays rent via Ejar. Your share deposited monthly.</div></div>
+    <div class="step" style="--i:4"><div class="step-num">5</div><div class="step-title">Exit when ready</div><div class="step-desc">Transfer shares to another investor, or exit when property is sold.</div></div>
+  </div>
+
+  <div class="big-quote reveal">
+    <p>The developer pays us 4–5% for instant exit. The investor pays only the 5% government tax. No platform fees. No exit fees.</p>
+  </div>
+</section>
+
+<!-- WHY NOW -->
+<section>
+  <span class="section-label reveal">06 — Why Now</span>
+  <h2 class="reveal">A unique <em>window</em> of opportunity</h2>
+
+  <div class="cards cards-2 reveal" style="margin:2rem 0">
+    <div class="card">
+      <div class="card-label">REGA Tokenization Timeline</div>
+      <div style="display:flex;flex-direction:column;gap:0.75rem;margin-top:0.75rem">
+        <div style="display:flex;gap:0.75rem;align-items:flex-start"><span style="width:8px;height:8px;border-radius:50%;background:var(--green);margin-top:6px;flex-shrink:0"></span><div><strong style="color:var(--green);font-size:0.85rem">Nov 2025</strong><br><span style="font-size:0.85rem;color:var(--light)">First RE tokenization completed (NHC)</span></div></div>
+        <div style="display:flex;gap:0.75rem;align-items:flex-start"><span style="width:8px;height:8px;border-radius:50%;background:var(--green);margin-top:6px;flex-shrink:0"></span><div><strong style="color:var(--green);font-size:0.85rem">Jan 2026</strong><br><span style="font-size:0.85rem;color:var(--light)">Non-Saudi ownership law enters force</span></div></div>
+        <div style="display:flex;gap:0.75rem;align-items:flex-start"><span style="width:8px;height:8px;border-radius:50%;background:var(--green);margin-top:6px;flex-shrink:0"></span><div><strong style="color:var(--green);font-size:0.85rem">Feb 2026</strong><br><span style="font-size:0.85rem;color:var(--light)">CMA opens to all foreign investors; REGA 2nd sandbox</span></div></div>
+        <div style="display:flex;gap:0.75rem;align-items:flex-start"><span style="width:8px;height:8px;border-radius:50%;background:var(--gold);margin-top:6px;flex-shrink:0"></span><div><strong style="color:var(--gold);font-size:0.85rem">Apr 2026</strong><br><span style="font-size:0.85rem;color:var(--gold);font-weight:600">Sandbox deadline — OUR ENTRY WINDOW</span></div></div>
+        <div style="display:flex;gap:0.75rem;align-items:flex-start"><span style="width:8px;height:8px;border-radius:50%;background:var(--green);margin-top:6px;flex-shrink:0"></span><div><strong style="color:var(--green);font-size:0.85rem">H1 2026</strong><br><span style="font-size:0.85rem;color:var(--light)">Tokenization regulations expected (consensus)</span></div></div>
+      </div>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:1rem">
+        <div class="card-label" style="color:var(--gold)">Riyadh 5-Year Rent Freeze</div>
+        <p class="card-desc">Never-leased units: initial rent set freely, then frozen 5 years. We control entry yield. "Guaranteed stable income for 5 years" beats speculative upside for a SAR 1,000 investor.</p>
+      </div>
+      <div class="card card-gold">
+        <div class="card-label">The Real Play: Capital Appreciation</div>
+        <div style="display:flex;gap:1.5rem;margin-top:0.75rem;text-align:center">
+          <div><span style="font-family:var(--font-display);font-size:1.5rem;font-weight:900;color:var(--green)">4.7%</span><br><span style="font-size:0.75rem;color:var(--gray)">Pop growth/yr</span></div>
+          <div><span style="font-family:var(--font-display);font-size:1.5rem;font-weight:900;color:var(--green)">15%*</span><br><span style="font-size:0.75rem;color:var(--gray)">3yr cap apprec.</span></div>
+          <div><span style="font-family:var(--font-display);font-size:1.5rem;font-weight:900;color:var(--green)">12.5%*</span><br><span style="font-size:0.75rem;color:var(--gray)">Total annual</span></div>
+        </div>
+        <p class="source" style="margin-top:0.75rem">*Based on HissaTech Al-Tahawul deal</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="big-quote reveal">
+    <p>Three tailwinds converging: tokenization infrastructure live, rent predictability locked in, and foreign capital entering. This window won't stay open.</p>
+  </div>
+</section>
+
+<!-- COMPETITION -->
+<section id="competition">
+  <span class="section-label reveal">07 — Competitive Landscape</span>
+  <h2 class="reveal">Three models exist.<br><em>None solve developer exit.</em></h2>
+  <p class="lead reveal">None charge the developer. All charge the investor.</p>
+
+  <div class="reveal" style="overflow-x:auto;margin:2rem 0">
+    <table class="data-table">
+      <thead>
+        <tr><th></th><th>Ghanem</th><th>HissaTech</th><th>Stake</th><th>Us (Launch)</th><th>Us (Target)</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Regulator</td><td>REGA sandbox</td><td>REGA licensed</td><td>CMA FinTech</td><td>REGA + MoC</td><td>REGA sandbox</td></tr>
+        <tr><td>Structure</td><td>RER tokenized</td><td>LLC / SPV</td><td>Fund units</td><td>SPV / LLC</td><td>RER tokenized</td></tr>
+        <tr><td>Day-1 investor cost</td><td>8.75%</td><td>8.31%</td><td>1.7%</td><td>~5% (RETT)</td><td>~5% (RETT)</td></tr>
+        <tr><td>Exit fee</td><td>TBD</td><td>10% of gains</td><td>2.5%</td><td>None</td><td>0.5% trade</td></tr>
+        <tr><td>Who pays fees</td><td>Investor</td><td>Investor</td><td>Investor</td><td>Developer</td><td>Developer</td></tr>
+        <tr><td>Min investment</td><td>SAR 109</td><td>SAR 3,070</td><td>SAR 500</td><td>SAR 1,000</td><td>SAR 1,000</td></tr>
+        <tr><td>Ownership</td><td>Nat'l registry</td><td>Private LLC</td><td>Fund units</td><td>Private LLC</td><td>Nat'l registry</td></tr>
+        <tr><td>Asset focus</td><td>Commercial</td><td>Residential</td><td>Mixed fund</td><td>New residential</td><td>New residential</td></tr>
+        <tr><td>Funding raised</td><td>$7.1M</td><td>$667K</td><td>$350M+</td><td>Pre-revenue</td><td>Pre-revenue</td></tr>
+        <tr><td>Fill speed</td><td>23 days</td><td>15 days</td><td>N/A</td><td>Target: &lt;14</td><td>Target: &lt;14</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="source reveal">Sources: Ghanem contract/app data (Feb 2026); HissaTech investment brief + Taqyeem appraisal; Stake KSA fund disclosures; Crunchbase</p>
+</section>
+
+<!-- REVENUE -->
+<section id="revenue">
+  <span class="section-label reveal">08 — Revenue Model</span>
+  <h2 class="reveal">Unit economics &<br><em>breakeven at ~100 units</em></h2>
+
+  <div class="cards cards-2 reveal" style="margin:2rem 0">
+    <div>
+      <table class="data-table">
+        <thead><tr><th>Stream</th><th>Who Pays</th><th>Rate</th></tr></thead>
+        <tbody>
+          <tr><td>Developer placement</td><td>Developer</td><td>4–5%</td></tr>
+          <tr><td>Management fee</td><td>Investors (rent)</td><td>1% AUM/yr</td></tr>
+          <tr><td>PM margin</td><td>Investors (rent)</td><td>2% of rent</td></tr>
+          <tr><td>Trading fee (Target)</td><td>Buyer + Seller</td><td>0.5% each</td></tr>
+        </tbody>
+      </table>
+      <h3 style="font-size:1.1rem;margin-top:1.5rem;color:var(--gold)">Per-Unit: SAR 500K Apartment, 7% yield</h3>
+      <table class="data-table">
+        <tbody>
+          <tr><td>Developer placement (5%)</td><td style="text-align:right">SAR 25,000</td></tr>
+          <tr><td>Annual management (1%)</td><td style="text-align:right">SAR 5,000</td></tr>
+          <tr><td>PM margin (2%)</td><td style="text-align:right">SAR 700</td></tr>
+          <tr style="font-weight:700;color:var(--green)"><td>Year 1 revenue</td><td style="text-align:right">SAR 30,700</td></tr>
+          <tr style="font-weight:700;color:var(--green)"><td>Ongoing annual</td><td style="text-align:right">SAR 5,700</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <div class="card card-gold" style="text-align:center;margin-bottom:1.5rem">
+        <div class="card-label">Breakeven</div>
+        <div style="font-family:var(--font-display);font-size:3rem;font-weight:900;color:var(--green)">~100 units</div>
+        <p class="card-desc">in Year 1 (8–9/month)<br>at SAR 3M annual opex</p>
+      </div>
+      <div class="cards" style="grid-template-columns:1fr 1fr 1fr;gap:0.75rem">
+        <div class="card" style="padding:1rem;text-align:center"><div style="color:var(--green);font-weight:700;font-size:1.1rem">~5%</div><div style="font-size:0.7rem;color:var(--gray)">Entry<br>vs 8–9%</div></div>
+        <div class="card" style="padding:1rem;text-align:center"><div style="color:var(--green);font-weight:700;font-size:1.1rem">0%</div><div style="font-size:0.7rem;color:var(--gray)">Exit<br>vs 2.5–10%</div></div>
+        <div class="card" style="padding:1rem;text-align:center"><div style="color:var(--green);font-weight:700;font-size:1.1rem">Dev pays</div><div style="font-size:0.7rem;color:var(--gray)">Who pays<br>vs investor</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PARTNERS -->
+<section>
+  <span class="section-label reveal">09 — Integration Partners</span>
+  <h2 class="reveal">340,000+ investors across <em>5 platforms</em></h2>
+
+  <div class="reveal" style="overflow-x:auto;margin:2rem 0">
+    <table class="data-table">
+      <thead><tr><th>Partner</th><th>Type</th><th>Scale</th><th>Integration</th></tr></thead>
+      <tbody>
+        <tr><td>Safqah Capital</td><td>RE Sukuk (CMA)</td><td>$15.2M seed</td><td>Pipeline: funded developers complete → our supply</td></tr>
+        <tr><td>Manafa</td><td>Debt+equity CF</td><td>SAR 1.5B / 100K inv</td><td>Distribution: cross-sell to their investor base</td></tr>
+        <tr><td>Forus</td><td>SME debt (SAMA)</td><td>SAR 520M / 120K inv</td><td>Distribution: overlapping investor profile</td></tr>
+        <tr><td>Lendo</td><td>Invoice finance</td><td>SAR 1.5B (SAMA)</td><td>Pipeline: SME developers</td></tr>
+        <tr><td>Dinar</td><td>Debt instruments</td><td>CMA licensed</td><td>Distribution: same demographic</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="flow reveal">
+    <div class="flow-box" style="background:var(--blue);color:var(--white)">Safqah finances<br>developer (Sukuk)</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-box" style="background:var(--dgreen);color:var(--gold)">Our platform<br>fractionalizes unit</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-box" style="background:var(--dgold);color:var(--bg)">Manafa/Forus investors<br>buy fractional shares</div>
+  </div>
+</section>
+
+<!-- RISKS -->
+<section>
+  <span class="section-label reveal">10 — Key Risks</span>
+  <h2 class="reveal">What could go <em>wrong</em></h2>
+
+  <div class="reveal" style="overflow-x:auto;margin:2rem 0">
+    <table class="data-table">
+      <thead><tr><th>Risk</th><th>Sev.</th><th>Mitigant</th></tr></thead>
+      <tbody>
+        <tr><td>REGA sandbox rejection</td><td style="color:var(--red)">High</td><td>Pre-engage REGA; launch SPV first; regulatory counsel</td></tr>
+        <tr><td>Developer default / vacancy</td><td style="color:var(--red)">High</td><td>Post-construction only; pre-tenanted; 5yr leases</td></tr>
+        <tr><td>Ghanem captures market</td><td style="color:var(--orange)">Med</td><td>Residential focus; developer-pays; lower investor costs</td></tr>
+        <tr><td>Insufficient investor demand</td><td style="color:var(--orange)">Med</td><td>Cross-distribute via Manafa/Forus (340K+ investors)</td></tr>
+        <tr><td>Regulatory changes</td><td style="color:var(--orange)">Med</td><td>Dual-track: SPV + token-ready from day one</td></tr>
+        <tr><td>5% RETT compresses returns</td><td>Low</td><td>Unavoidable; all competitors face same tax</td></tr>
+        <tr><td>Bad deal damages reputation</td><td style="color:var(--red)">High</td><td>Taqyeem appraisal + Fahis inspection + Shariah per deal</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="kv reveal">
+    <div class="kv-box kill">
+      <h4>What would kill this</h4>
+      <ul>
+        <li>Developers refuse to pay 4–5%</li>
+        <li>REGA rejects sandbox application</li>
+        <li>Ghanem launches residential + developer-pays</li>
+      </ul>
+    </div>
+    <div class="kv-box validate">
+      <h4>What would validate this</h4>
+      <ul>
+        <li>3+ developers say "yes" to 4–5%</li>
+        <li>REGA sandbox accepted</li>
+        <li>First deal fills in &lt;21 days</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- WHAT IT TAKES -->
+<section>
+  <span class="section-label reveal">11 — What It Takes</span>
+  <h2 class="reveal">Capital, team, <em>and timeline</em></h2>
+
+  <div class="pillars reveal stagger">
+    <div class="pillar" style="--i:0">
+      <div class="pillar-header">Capital</div>
+      <div class="pillar-body">
+        <strong>SAR 3–5M seed round</strong><br><br>
+        Covers:<br>
+        • Tech build / white-label<br>
+        • Legal (CMA / REGA)<br>
+        • Team (8–10 people)<br>
+        • First 2–3 deals working capital<br>
+        • 18-month runway
+      </div>
+    </div>
+    <div class="pillar" style="--i:1">
+      <div class="pillar-header">Team</div>
+      <div class="pillar-body">
+        <strong>Co-founder needed:</strong><br>
+        Fintech + REGA experience<br><br>
+        First 5 hires:<br>
+        1. CTO / Tech lead<br>
+        2. Legal / Compliance<br>
+        3. RE acquisition manager<br>
+        4. Product / UX<br>
+        5. Marketing / Growth
+      </div>
+    </div>
+    <div class="pillar" style="--i:2">
+      <div class="pillar-header">Timeline</div>
+      <div class="pillar-body">
+        Mo 1–3: Validate + apply sandbox<br>
+        Mo 4–6: Incorporate + raise seed<br>
+        Mo 7–12: Build MVP<br>
+        Mo 13–15: Pilot 1–2 deals (SPV)<br>
+        Mo 16–24: Scale + migrate RER<br><br>
+        <strong>First revenue: ~Month 13</strong>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DECISION -->
+<section id="decision">
+  <span class="section-label reveal">12 — The Decision</span>
+  <h2 class="reveal">Go or <em>no-go?</em></h2>
+
+  <div class="compare-cols reveal">
+    <div class="compare-col go">
+      <h3>Reasons to Go</h3>
+      <ul>
+        <li>SAR 2.3T market with structural supply gap</li>
+        <li>Government built the tokenization rails</li>
+        <li>No competitor solves developer exit</li>
+        <li>Developer-pays = most investor-friendly model</li>
+        <li>REGA sandbox deadline creates urgency</li>
+        <li>Integration partners provide day-1 pipeline</li>
+        <li>Proven demand: SAR 7.6M filled in 15 days by a $667K startup (HissaTech)</li>
+      </ul>
+    </div>
+    <div class="compare-col wait">
+      <h3>Reasons to Wait</h3>
+      <ul>
+        <li>Ghanem has 18-month head start + $7.1M</li>
+        <li>Requires SAR 3–5M seed capital</li>
+        <li>18–24 months to first revenue</li>
+        <li>REGA sandbox approval not guaranteed</li>
+        <li>Market may consolidate before launch</li>
+        <li>Developer willingness to pay 4–5% is unvalidated (assumption, not fact)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="cta reveal">
+    <p style="font-size:0.9rem;color:var(--light);margin-bottom:0.5rem;position:relative">The single most important next step:</p>
+    <h3>Interview 10–15 Riyadh developers.<br>Validate they'll pay 4–5%.<br>If yes, apply to REGA sandbox by April 30.</h3>
+    <p style="margin-top:1rem;position:relative">Cost: SAR 5–10K (legal scoping) + 20 hours. Reversible. Low-risk.</p>
+  </div>
+</section>
+
+<footer>
+  <p>Confidential — Developer Exit Accelerator — March 2026</p>
+  <p style="margin-top:0.75rem">&copy; 2026 All rights reserved.</p>
+  <p style="margin-top:1.5rem;font-size:0.7rem;color:#607D8B">With warm regards from ESH</p>
+</footer>
+
+<script>
+// SCROLL REVEAL
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('visible'); }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale').forEach(el => obs.observe(el));
+
+// NAV SCROLL
+window.addEventListener('scroll', () => {
+  document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 50);
+});
+
+// COUNTER ANIMATION
+const counterObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting && !e.target.dataset.counted) {
+      e.target.dataset.counted = 'true';
+      const target = parseInt(e.target.dataset.target);
+      const prefix = e.target.dataset.prefix || '';
+      const suffix = e.target.dataset.suffix || '';
+      let current = 0;
+      const step = target / 40;
+      const timer = setInterval(() => {
+        current += step;
+        if (current >= target) { current = target; clearInterval(timer); }
+        e.target.textContent = prefix + Math.round(current) + suffix;
+      }, 30);
+    }
+  });
+}, { threshold: 0.5 });
+
+document.querySelectorAll('.counter').forEach(el => counterObs.observe(el));
+
+// SMOOTH SCROLL FOR NAV LINKS
+document.querySelectorAll('nav a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    document.querySelector(a.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
+  });
+});
+</script>
+</body>
+</html>
