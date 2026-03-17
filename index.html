@@ -47,10 +47,10 @@ body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xm
 }
 
 /* PROGRESS BAR */
-.progress-bar{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--green),var(--gold));z-index:200;width:0;transition:width 0.1s}
+.progress-bar{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--green),var(--gold));z-index:200;width:0;transition:width 0.1s;pointer-events:none}
 
 /* NAV */
-nav{position:fixed;top:3px;left:0;right:0;z-index:100;padding:0.75rem 1.25rem;display:flex;justify-content:space-between;align-items:center;backdrop-filter:blur(20px);background:rgba(6,15,10,0.88);border-bottom:1px solid rgba(0,200,83,0.1);transition:all 0.3s}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:0.75rem 1.25rem;display:flex;justify-content:space-between;align-items:center;backdrop-filter:blur(20px);background:rgba(6,15,10,0.95);border-bottom:1px solid rgba(0,200,83,0.1);transition:all 0.3s}
 nav.scrolled{padding:0.5rem 1.25rem}
 .nav-logo{font-family:var(--font-display);font-size:1rem;font-weight:700;color:var(--green);letter-spacing:-0.02em;white-space:nowrap}
 .nav-links{display:flex;gap:1.25rem;align-items:center}
@@ -267,6 +267,54 @@ footer{padding:2.5rem 1.25rem;text-align:center;color:var(--gray);font-size:0.75
 }
 @media(min-width:768px){.hamburger{display:none !important}}
 @media(max-width:767px){.nav-links{display:none}.hamburger{display:flex}}
+
+/* STACKED DATA ITEMS (replaces tables on mobile) */
+.data-list{display:flex;flex-direction:column;gap:1px;background:rgba(0,200,83,0.08);border-radius:10px;overflow:hidden;margin:1rem 0}
+.data-item{display:flex;justify-content:space-between;align-items:center;padding:0.7rem 1rem;background:var(--card);gap:0.5rem}
+.data-item-label{font-size:0.8rem;color:var(--gray);flex:1}
+.data-item-val{font-size:0.8rem;color:var(--light);font-weight:600;text-align:right}
+.data-item-val.green{color:var(--green)}.data-item-val.red{color:var(--red)}.data-item-val.gold{color:var(--gold)}
+.data-item.total{background:var(--card2)}
+.data-item.total .data-item-label,.data-item.total .data-item-val{font-weight:700;color:var(--red)}
+.data-item.highlight{background:var(--card2)}
+.data-item.highlight .data-item-label,.data-item.highlight .data-item-val{color:var(--green);font-weight:700}
+
+/* COMPETITOR CARDS */
+.competitor-cards{display:grid;grid-template-columns:1fr;gap:1rem;margin:1.5rem 0}
+.comp-card{background:var(--card);border-radius:10px;padding:1.25rem;border:1px solid rgba(0,200,83,0.08)}
+.comp-card.ours{border-color:rgba(255,213,79,0.25);background:rgba(27,94,32,0.2)}
+.comp-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;padding-bottom:0.6rem;border-bottom:1px solid var(--card2)}
+.comp-card-name{font-family:var(--font-display);font-size:1.1rem;font-weight:700;color:var(--white)}
+.comp-card.ours .comp-card-name{color:var(--gold)}
+.comp-card-badge{font-size:0.65rem;padding:0.15rem 0.5rem;border-radius:100px;font-weight:600}
+.comp-card-rows{display:grid;grid-template-columns:1fr 1fr;gap:0.4rem 1rem}
+.comp-row-label{font-size:0.72rem;color:var(--gray)}
+.comp-row-val{font-size:0.72rem;color:var(--light);font-weight:500;text-align:right}
+
+/* PARTNER CARDS */
+.partner-cards{display:grid;grid-template-columns:1fr;gap:0.75rem;margin:1.5rem 0}
+.partner-card{background:var(--card);border-radius:8px;padding:1rem 1.25rem}
+.partner-name{font-weight:700;color:var(--white);font-size:0.9rem;margin-bottom:0.3rem}
+.partner-meta{display:flex;gap:0.75rem;flex-wrap:wrap;font-size:0.75rem;color:var(--gray);margin-bottom:0.4rem}
+.partner-meta span{background:var(--card2);padding:0.15rem 0.5rem;border-radius:4px}
+.partner-desc{font-size:0.8rem;color:var(--light)}
+
+/* RISK ITEMS */
+.risk-items{display:flex;flex-direction:column;gap:0.75rem;margin:1.5rem 0}
+.risk-item{background:var(--card);border-radius:8px;padding:1rem 1.25rem;display:flex;gap:1rem;align-items:flex-start}
+.risk-sev{font-size:0.65rem;font-weight:700;padding:0.2rem 0.5rem;border-radius:4px;white-space:nowrap;flex-shrink:0;margin-top:0.1rem}
+.risk-sev.high{background:rgba(239,83,80,0.15);color:var(--red)}
+.risk-sev.med{background:rgba(255,167,38,0.15);color:var(--orange)}
+.risk-sev.low{background:rgba(0,200,83,0.1);color:var(--green)}
+.risk-content{flex:1}
+.risk-name{font-size:0.85rem;font-weight:600;color:var(--white);margin-bottom:0.2rem}
+.risk-mit{font-size:0.78rem;color:var(--gray)}
+
+@media(min-width:768px){
+  .competitor-cards{grid-template-columns:repeat(2,1fr)}
+  .partner-cards{grid-template-columns:1fr 1fr}
+  .comp-card-rows{grid-template-columns:1fr 1fr 1fr}
+}
 </style>
 </head>
 <body>
@@ -287,23 +335,14 @@ footer{padding:2.5rem 1.25rem;text-align:center;color:var(--gray);font-size:0.75
     <a href="#backup" data-section="backup">Backup</a>
     <span class="nav-badge">CONFIDENTIAL</span>
   </div>
-  <div class="hamburger" id="hamburger" aria-label="Menu">
-    <span></span><span></span><span></span>
-  </div>
+  <div class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></div>
 </nav>
-
-<!-- MOBILE MENU -->
 <div class="mobile-menu" id="mobileMenu">
-  <a href="#opportunity" class="mm-link">Opportunity</a>
-  <a href="#problem" class="mm-link">Problem</a>
-  <a href="#solution" class="mm-link">Solution</a>
-  <a href="#competition" class="mm-link">Competition</a>
-  <a href="#revenue" class="mm-link">Revenue</a>
-  <a href="#decision" class="mm-link">Decision</a>
+  <a href="#opportunity" class="mm-link">Opportunity</a><a href="#problem" class="mm-link">Problem</a>
+  <a href="#solution" class="mm-link">Solution</a><a href="#competition" class="mm-link">Competition</a>
+  <a href="#revenue" class="mm-link">Revenue</a><a href="#decision" class="mm-link">Decision</a>
   <a href="#backup" class="mm-link">Backup</a>
 </div>
-
-<!-- BACK TO TOP -->
 <button class="back-top" id="backTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Back to top">&uarr;</button>
 
 <!-- HERO -->
@@ -311,10 +350,7 @@ footer{padding:2.5rem 1.25rem;text-align:center;color:var(--gray);font-size:0.75
   <div class="hero-eyebrow">Business Case &mdash; March 2026</div>
   <h1>Developer Exit<br><span>Accelerator</span></h1>
   <p class="hero-sub">Fractional real estate ownership platform built on REGA tokenization infrastructure. Developers pay for speed. Investors pay nothing upfront.</p>
-  <div class="hero-meta">
-    <span class="conf">CONFIDENTIAL</span>
-    <span>Riyadh, Saudi Arabia</span>
-  </div>
+  <div class="hero-meta"><span class="conf">CONFIDENTIAL</span><span>Riyadh, Saudi Arabia</span></div>
   <div class="scroll-cue"><span>Scroll to explore</span><div class="scroll-chevron"></div></div>
 </section>
 
@@ -362,28 +398,29 @@ footer{padding:2.5rem 1.25rem;text-align:center;color:var(--gray);font-size:0.75
     <div class="card" style="--i:1"><div class="card-label">SAM</div><div class="card-val">SAR 10&ndash;15B</div><p class="card-desc">Units developers struggle to sell quickly. ~20&ndash;30K units/year.</p><span class="hypothesis">&#x26A0; Hypothesis &mdash; to validate via developer interviews</span></div>
     <div class="card card-gold" style="--i:2"><div class="card-label">SOM (Year 1&ndash;3)</div><div class="card-val">SAR 50&ndash;150M</div><p class="card-desc">Riyadh residential only. Target: 100&ndash;300 units in first 3 years.</p></div>
   </div>
-  <p class="source reveal">Sources: NHC National Housing Report 2024; Knight Frank; JLL Saudi Arabia 2024. SAM estimate pending developer interviews.</p>
+  <p class="source reveal">Sources: NHC National Housing Report 2024; Knight Frank; JLL Saudi Arabia 2024.</p>
 </section>
 
 <!-- 03 DEVELOPER PAIN -->
 <section id="problem">
   <span class="section-label reveal-left">03 &mdash; The Developer's Pain</span>
   <h2 class="reveal-left">Selling what they build costs <em>14&ndash;28%</em></h2>
-  <div class="grid-2 reveal" style="margin:1.5rem 0">
-    <div class="table-wrap"><table class="data-table"><thead><tr><th>Cost Item</th><th>Amount</th><th>%</th></tr></thead><tbody>
-      <tr><td>Brokerage (Fal)</td><td>SAR 12,500</td><td>2.5%</td></tr>
-      <tr><td>Vacancy holding (3&ndash;6 mo)</td><td>SAR 25K&ndash;50K</td><td>5&ndash;10%</td></tr>
-      <tr><td>Marketing</td><td>SAR 10K&ndash;30K</td><td>2&ndash;6%</td></tr>
-      <tr><td>Price discounts</td><td>SAR 25K&ndash;50K</td><td>5&ndash;10%</td></tr>
-      <tr style="font-weight:700"><td style="color:var(--red)">TOTAL</td><td style="color:var(--red)">SAR 70K&ndash;140K</td><td style="color:var(--red)">14&ndash;28%</td></tr>
-    </tbody></table></div>
-    <div class="grid-2">
-      <div class="card card-red"><div class="card-label">Today</div><div class="card-val" style="color:var(--red)">14&ndash;28%</div><p class="card-desc">3&ndash;6 months<br>Uncertain<br>Price erosion</p></div>
-      <div class="card card-gold"><div class="card-label">Us</div><div class="card-val" style="color:var(--green)">4&ndash;5%</div><p class="card-desc">&lt;14 days<br>Full price<br>Dev pays us</p></div>
-    </div>
+  <p class="lead reveal">Cost to sell a SAR 500K apartment today:</p>
+
+  <div class="data-list reveal">
+    <div class="data-item"><span class="data-item-label">Brokerage commission (Fal)</span><span class="data-item-val">SAR 12,500 &middot; 2.5%</span></div>
+    <div class="data-item"><span class="data-item-label">Vacancy holding (3&ndash;6 mo)</span><span class="data-item-val">SAR 25K&ndash;50K &middot; 5&ndash;10%</span></div>
+    <div class="data-item"><span class="data-item-label">Marketing spend</span><span class="data-item-val">SAR 10K&ndash;30K &middot; 2&ndash;6%</span></div>
+    <div class="data-item"><span class="data-item-label">Price discounts</span><span class="data-item-val">SAR 25K&ndash;50K &middot; 5&ndash;10%</span></div>
+    <div class="data-item total"><span class="data-item-label">TOTAL</span><span class="data-item-val red">SAR 70K&ndash;140K &middot; 14&ndash;28%</span></div>
+  </div>
+
+  <div class="grid-2 reveal" style="margin:1rem 0">
+    <div class="card card-red"><div class="card-label">Today</div><div class="card-val" style="color:var(--red)">14&ndash;28%</div><p class="card-desc">3&ndash;6 months &middot; Uncertain &middot; Price erosion</p></div>
+    <div class="card card-gold"><div class="card-label">Us</div><div class="card-val" style="color:var(--green)">4&ndash;5%</div><p class="card-desc">&lt;14 days &middot; Full price &middot; Dev pays us</p></div>
   </div>
   <div class="big-quote reveal-scale"><p>Developer saves SAR 50K&ndash;115K per unit AND gets paid in days, not months.</p></div>
-  <div class="card reveal-right" style="margin-top:1rem;background:var(--card2)"><div class="card-label">Why this pain is structural</div><p class="card-desc">Banks lend to mega-projects (NEOM, ROSHN). SME developers compete for individual mortgage-dependent buyers. Riyadh has 305K units of unmet demand &mdash; but conversion is slow and expensive. The demand exists; the mechanism doesn't.</p></div>
+  <div class="card reveal-right" style="margin-top:1rem;background:var(--card2)"><div class="card-label">Why this pain is structural</div><p class="card-desc">Banks lend to mega-projects (NEOM, ROSHN). SME developers compete for individual mortgage-dependent buyers. Riyadh has 305K units of unmet demand &mdash; but conversion is slow and expensive.</p></div>
 </section>
 
 <!-- 04 INVESTOR PAIN -->
@@ -393,7 +430,7 @@ footer{padding:2.5rem 1.25rem;text-align:center;color:var(--gray);font-size:0.75
   <div class="grid-2 reveal stagger" style="margin:1.5rem 0">
     <div class="card card-red" style="--i:0"><div class="card-label">Buy an apartment</div><p class="card-desc">SAR 400&ndash;700K. 10&ndash;20% down + mortgage. Most can't qualify.</p></div>
     <div class="card" style="--i:1;border-color:rgba(255,167,38,0.2)"><div class="card-label" style="color:var(--orange)">REITs</div><p class="card-desc">Liquid but impersonal. You don't know which building you own.</p></div>
-    <div class="card" style="--i:2;border-color:rgba(255,167,38,0.2)"><div class="card-label" style="color:var(--orange)">Fractional platforms</div><p class="card-desc">8&ndash;9% upfront cost. SAR 3,000+ minimum. 3&ndash;5 year lockup.</p></div>
+    <div class="card" style="--i:2;border-color:rgba(255,167,38,0.2)"><div class="card-label" style="color:var(--orange)">Fractional platforms</div><p class="card-desc">8&ndash;9% upfront. SAR 3,000+ minimum. 3&ndash;5 year lockup.</p></div>
     <div class="card card-red" style="--i:3"><div class="card-label">Bank deposits</div><p class="card-desc">3&ndash;4% returns. Below inflation. No real asset backing.</p></div>
   </div>
   <div class="big-quote reveal-left"><p>What we offer instead</p></div>
@@ -418,15 +455,13 @@ footer{padding:2.5rem 1.25rem;text-align:center;color:var(--gray);font-size:0.75
     <div class="step" style="--i:4"><div class="step-num">5</div><div class="step-title">Exit when ready</div><div class="step-desc">Transfer shares or exit when property sells.</div></div>
   </div>
   <div class="big-quote reveal-scale"><p>The developer pays us 4&ndash;5% for instant exit. The investor pays only the 5% government tax. No platform fees. No exit fees.</p></div>
-
-  <!-- BIZ MODEL MAP -->
   <div class="biz-map reveal">
     <div class="biz-map-title">Business Model: How Money &amp; Assets Flow</div>
     <div class="biz-map-grid">
-      <div class="biz-entity" style="background:var(--orange);color:var(--white)">Developer<br><span class="biz-sub" style="color:rgba(255,255,255,0.7)">(unsold units)</span></div>
-      <div><span class="biz-arrow">&rarr;</span><span class="biz-arrow-label">Sells units</span></div>
-      <div class="biz-center"><div class="biz-center-name">Our Platform</div><div class="biz-sub">SPV (Launch) &rarr; RER (Target)</div></div>
-      <div><span class="biz-arrow">&rarr;</span><span class="biz-arrow-label">Sells fractions</span></div>
+      <div class="biz-entity" style="background:var(--orange);color:var(--white)">Developer<br><span class="biz-sub" style="color:rgba(255,255,255,0.7)">(completed units)</span></div>
+      <div><span class="biz-arrow">&rarr;</span><span class="biz-arrow-label">Lists units on</span></div>
+      <div class="biz-center"><div class="biz-center-name">Our Platform</div><div class="biz-sub">Fractionalizes &amp; sells fractions to investors</div></div>
+      <div><span class="biz-arrow">&rarr;</span><span class="biz-arrow-label">Investors own fractions</span></div>
       <div class="biz-entity" style="background:var(--dgold);color:var(--bg)">Investors<br><span class="biz-sub" style="color:rgba(0,0,0,0.5)">(Crowd / Institutional)</span></div>
     </div>
     <div class="biz-supporters">
@@ -477,23 +512,65 @@ footer{padding:2.5rem 1.25rem;text-align:center;color:var(--gray);font-size:0.75
 <section id="competition">
   <span class="section-label reveal-left">07 &mdash; Competitive Landscape</span>
   <h2 class="reveal-left">Three models exist. <em>None solve developer exit.</em></h2>
-  <div class="table-wrap reveal">
-    <table class="data-table">
-      <thead><tr><th></th><th>Ghanem</th><th>HissaTech</th><th>Stake</th><th class="hl">Us (Launch)</th><th class="hl">Us (Target)</th></tr></thead>
-      <tbody>
-        <tr><td>Regulator</td><td>REGA sandbox</td><td>REGA licensed</td><td>CMA FinTech</td><td class="hl">REGA + Min. of Commerce</td><td class="hl">REGA sandbox</td></tr>
-        <tr><td>Structure</td><td>RER tokenized</td><td>LLC / SPV</td><td>Fund units</td><td class="hl">SPV / LLC</td><td class="hl">RER tokenized</td></tr>
-        <tr><td>Day-1 cost</td><td>8.75%</td><td>8.31%</td><td>1.7%</td><td class="hl">&sim;5% (RETT)</td><td class="hl">&sim;5% (RETT)</td></tr>
-        <tr><td>Ongoing fee</td><td>TBD</td><td>5% of rent</td><td>Mgmt fee</td><td class="hl">1%+2% PM</td><td class="hl">1%+2% PM</td></tr>
-        <tr><td>Exit fee</td><td>TBD</td><td>10% of gains</td><td>2.5%</td><td class="hl">None</td><td class="hl">0.5% trade</td></tr>
-        <tr><td>Who pays</td><td>Investor</td><td>Investor</td><td>Investor</td><td class="hl">Developer</td><td class="hl">Developer</td></tr>
-        <tr><td>Min invest</td><td>SAR 109</td><td>SAR 3,070</td><td>SAR 500</td><td class="hl">SAR 1,000</td><td class="hl">SAR 1,000</td></tr>
-        <tr><td>Ownership</td><td>Nat'l registry</td><td>Private LLC</td><td>Fund units</td><td class="hl">Private LLC</td><td class="hl">Nat'l registry</td></tr>
-        <tr><td>Asset</td><td>Commercial</td><td>Residential</td><td>Mixed fund</td><td class="hl">New residential</td><td class="hl">New residential</td></tr>
-        <tr><td>Funding</td><td>$7.1M</td><td>$667K</td><td>$350M+</td><td class="hl">Pre-revenue</td><td class="hl">Pre-revenue</td></tr>
-        <tr><td>Fill speed</td><td>23 days</td><td>15 days</td><td>N/A</td><td class="hl">Target: &lt;14</td><td class="hl">Target: &lt;14</td></tr>
-      </tbody>
-    </table>
+  <p class="lead reveal" style="margin-bottom:1rem">None charge the developer. All charge the investor.</p>
+
+  <div class="competitor-cards reveal stagger">
+    <div class="comp-card" style="--i:0">
+      <div class="comp-card-header"><span class="comp-card-name">Ghanem</span><span class="comp-card-badge" style="background:var(--card2);color:var(--green)">$7.1M raised</span></div>
+      <div class="comp-card-rows">
+        <span class="comp-row-label">Structure</span><span class="comp-row-val">RER tokenized</span>
+        <span class="comp-row-label">Day-1 cost</span><span class="comp-row-val">8.75%</span>
+        <span class="comp-row-label">Ongoing</span><span class="comp-row-val">TBD</span>
+        <span class="comp-row-label">Exit fee</span><span class="comp-row-val">TBD</span>
+        <span class="comp-row-label">Who pays</span><span class="comp-row-val">Investor</span>
+        <span class="comp-row-label">Min invest</span><span class="comp-row-val">SAR 109</span>
+        <span class="comp-row-label">Ownership</span><span class="comp-row-val">Nat'l registry</span>
+        <span class="comp-row-label">Asset</span><span class="comp-row-val">Commercial</span>
+        <span class="comp-row-label">Fill speed</span><span class="comp-row-val">23 days</span>
+      </div>
+    </div>
+    <div class="comp-card" style="--i:1">
+      <div class="comp-card-header"><span class="comp-card-name">HissaTech</span><span class="comp-card-badge" style="background:var(--card2);color:var(--green)">$667K raised</span></div>
+      <div class="comp-card-rows">
+        <span class="comp-row-label">Structure</span><span class="comp-row-val">LLC / SPV</span>
+        <span class="comp-row-label">Day-1 cost</span><span class="comp-row-val">8.31%</span>
+        <span class="comp-row-label">Ongoing</span><span class="comp-row-val">5% of rent</span>
+        <span class="comp-row-label">Exit fee</span><span class="comp-row-val">10% of gains</span>
+        <span class="comp-row-label">Who pays</span><span class="comp-row-val">Investor</span>
+        <span class="comp-row-label">Min invest</span><span class="comp-row-val">SAR 3,070</span>
+        <span class="comp-row-label">Ownership</span><span class="comp-row-val">Private LLC</span>
+        <span class="comp-row-label">Asset</span><span class="comp-row-val">Residential</span>
+        <span class="comp-row-label">Fill speed</span><span class="comp-row-val">15 days</span>
+      </div>
+    </div>
+    <div class="comp-card" style="--i:2">
+      <div class="comp-card-header"><span class="comp-card-name">Stake</span><span class="comp-card-badge" style="background:var(--card2);color:var(--green)">$350M+ global</span></div>
+      <div class="comp-card-rows">
+        <span class="comp-row-label">Structure</span><span class="comp-row-val">Fund units</span>
+        <span class="comp-row-label">Day-1 cost</span><span class="comp-row-val">1.7%</span>
+        <span class="comp-row-label">Ongoing</span><span class="comp-row-val">Mgmt fee</span>
+        <span class="comp-row-label">Exit fee</span><span class="comp-row-val">2.5%</span>
+        <span class="comp-row-label">Who pays</span><span class="comp-row-val">Investor</span>
+        <span class="comp-row-label">Min invest</span><span class="comp-row-val">SAR 500</span>
+        <span class="comp-row-label">Ownership</span><span class="comp-row-val">Fund units</span>
+        <span class="comp-row-label">Asset</span><span class="comp-row-val">Mixed fund</span>
+        <span class="comp-row-label">Fill speed</span><span class="comp-row-val">N/A</span>
+      </div>
+    </div>
+    <div class="comp-card ours" style="--i:3">
+      <div class="comp-card-header"><span class="comp-card-name">Us (Launch &rarr; Target)</span><span class="comp-card-badge" style="background:var(--gold-dim);color:var(--gold)">Pre-revenue</span></div>
+      <div class="comp-card-rows">
+        <span class="comp-row-label">Structure</span><span class="comp-row-val" style="color:var(--gold)">SPV &rarr; RER tokenized</span>
+        <span class="comp-row-label">Day-1 cost</span><span class="comp-row-val" style="color:var(--green)">&sim;5% (RETT)</span>
+        <span class="comp-row-label">Ongoing</span><span class="comp-row-val" style="color:var(--green)">1% + 2% PM</span>
+        <span class="comp-row-label">Exit fee</span><span class="comp-row-val" style="color:var(--green)">None &rarr; 0.5%</span>
+        <span class="comp-row-label">Who pays</span><span class="comp-row-val" style="color:var(--gold)">Developer</span>
+        <span class="comp-row-label">Min invest</span><span class="comp-row-val">SAR 1,000</span>
+        <span class="comp-row-label">Ownership</span><span class="comp-row-val" style="color:var(--gold)">LLC &rarr; Nat'l registry</span>
+        <span class="comp-row-label">Asset</span><span class="comp-row-val">New residential</span>
+        <span class="comp-row-label">Fill speed</span><span class="comp-row-val">Target: &lt;14 days</span>
+      </div>
+    </div>
   </div>
   <p class="source reveal">Sources: Ghanem contract/app data (Feb 2026); HissaTech investment brief; Stake KSA fund disclosures; Crunchbase</p>
 </section>
@@ -502,22 +579,25 @@ footer{padding:2.5rem 1.25rem;text-align:center;color:var(--gray);font-size:0.75
 <section id="revenue">
   <span class="section-label reveal-right">08 &mdash; Revenue Model</span>
   <h2 class="reveal-right">Unit economics &amp; <em>breakeven at ~100 units</em></h2>
-  <div class="grid-2 reveal" style="margin:1.5rem 0">
+
+  <div class="card-label reveal" style="margin-top:1rem">Revenue Streams</div>
+  <div class="data-list reveal">
+    <div class="data-item"><span class="data-item-label">Developer placement</span><span class="data-item-val">4&ndash;5% &middot; Developer pays &middot; One-time</span></div>
+    <div class="data-item"><span class="data-item-label">Management fee</span><span class="data-item-val">1% AUM/yr &middot; From rent &middot; Quarterly</span></div>
+    <div class="data-item"><span class="data-item-label">PM margin</span><span class="data-item-val">2% of rent &middot; From rent &middot; Monthly</span></div>
+    <div class="data-item"><span class="data-item-label">Trading fee (Target)</span><span class="data-item-val">0.5% each &middot; Buyer+Seller &middot; Per trade</span></div>
+  </div>
+
+  <div class="grid-2 reveal" style="margin-top:1.5rem">
     <div>
-      <div class="table-wrap"><table class="data-table"><thead><tr><th>Stream</th><th>Who Pays</th><th>Rate</th></tr></thead><tbody>
-        <tr><td>Developer placement</td><td>Developer</td><td>4&ndash;5%</td></tr>
-        <tr><td>Management fee</td><td>Investors (rent)</td><td>1% AUM/yr</td></tr>
-        <tr><td>PM margin</td><td>Investors (rent)</td><td>2% of rent</td></tr>
-        <tr><td>Trading fee (Target)</td><td>Buyer+Seller</td><td>0.5% each</td></tr>
-      </tbody></table></div>
-      <h3 style="font-size:1rem;margin-top:1rem;color:var(--gold)">Per-Unit: SAR 500K, 7% yield</h3>
-      <div class="table-wrap"><table class="data-table"><tbody>
-        <tr><td>Placement (5%)</td><td style="text-align:right">SAR 25,000</td></tr>
-        <tr><td>Annual mgmt (1%)</td><td style="text-align:right">SAR 5,000</td></tr>
-        <tr><td>PM margin (2%)</td><td style="text-align:right">SAR 700</td></tr>
-        <tr style="font-weight:700;color:var(--green)"><td>Year 1 revenue</td><td style="text-align:right">SAR 30,700</td></tr>
-        <tr style="font-weight:700;color:var(--green)"><td>Ongoing annual</td><td style="text-align:right">SAR 5,700</td></tr>
-      </tbody></table></div>
+      <div class="card-label" style="color:var(--gold);margin-bottom:0.5rem">Per-Unit: SAR 500K Apartment, 7% yield</div>
+      <div class="data-list">
+        <div class="data-item"><span class="data-item-label">Placement (5%)</span><span class="data-item-val">SAR 25,000</span></div>
+        <div class="data-item"><span class="data-item-label">Annual mgmt (1%)</span><span class="data-item-val">SAR 5,000</span></div>
+        <div class="data-item"><span class="data-item-label">PM margin (2%)</span><span class="data-item-val">SAR 700</span></div>
+        <div class="data-item highlight"><span class="data-item-label">Year 1 revenue</span><span class="data-item-val green">SAR 30,700</span></div>
+        <div class="data-item highlight"><span class="data-item-label">Ongoing annual</span><span class="data-item-val green">SAR 5,700</span></div>
+      </div>
     </div>
     <div>
       <div class="card card-gold" style="text-align:center;margin-bottom:1rem"><div class="card-label">Breakeven</div><div style="font-family:var(--font-display);font-size:clamp(2rem,5vw,3rem);font-weight:900;color:var(--green)">&sim;100 units</div><p class="card-desc">in Year 1 (8&ndash;9/month) at SAR 3M opex</p></div>
@@ -534,19 +614,21 @@ footer{padding:2.5rem 1.25rem;text-align:center;color:var(--gray);font-size:0.75
 <section>
   <span class="section-label reveal-left">09 &mdash; Integration Partners</span>
   <h2 class="reveal-left">340,000+ investors across <em>5 platforms</em></h2>
-  <div class="table-wrap reveal"><table class="data-table"><thead><tr><th>Partner</th><th>Type</th><th>Scale</th><th>Integration</th></tr></thead><tbody>
-    <tr><td>Safqah Capital</td><td>RE Sukuk</td><td>$15.2M seed</td><td>Pipeline: funded devs &rarr; our supply</td></tr>
-    <tr><td>Manafa</td><td>Debt+equity</td><td>SAR 1.5B / 100K inv</td><td>Distribution: cross-sell</td></tr>
-    <tr><td>Forus</td><td>SME debt</td><td>SAR 520M / 120K inv</td><td>Distribution: overlap</td></tr>
-    <tr><td>Lendo</td><td>Invoice finance</td><td>SAR 1.5B</td><td>Pipeline: SME developers</td></tr>
-    <tr><td>Dinar</td><td>Debt instruments</td><td>CMA licensed</td><td>Distribution: same demo</td></tr>
-  </tbody></table></div>
+
+  <div class="partner-cards reveal stagger">
+    <div class="partner-card" style="--i:0"><div class="partner-name">Safqah Capital</div><div class="partner-meta"><span>RE Sukuk (CMA)</span><span>$15.2M seed</span></div><div class="partner-desc">Pipeline: their funded developers complete &rarr; our supply of finished units</div></div>
+    <div class="partner-card" style="--i:1"><div class="partner-name">Manafa</div><div class="partner-meta"><span>Debt+equity CF</span><span>SAR 1.5B / 100K inv</span></div><div class="partner-desc">Distribution: cross-sell fractional RE to their investor base</div></div>
+    <div class="partner-card" style="--i:2"><div class="partner-name">Forus</div><div class="partner-meta"><span>SME debt (SAMA)</span><span>SAR 520M / 120K inv</span></div><div class="partner-desc">Distribution: overlapping investor profile, similar ticket size</div></div>
+    <div class="partner-card" style="--i:3"><div class="partner-name">Lendo</div><div class="partner-meta"><span>Invoice finance</span><span>SAR 1.5B (SAMA)</span></div><div class="partner-desc">Pipeline: SME developers using Lendo for construction phase</div></div>
+    <div class="partner-card" style="--i:4"><div class="partner-name">Dinar</div><div class="partner-meta"><span>Debt instruments</span><span>CMA licensed</span></div><div class="partner-desc">Distribution: same investor demographic (SAR 1K min)</div></div>
+  </div>
+
   <div class="flow reveal-scale">
     <div class="flow-box" style="background:var(--blue);color:var(--white)">Deal flow<br>(Direct or Partner e.g. Safqah)</div>
     <span class="flow-arrow">&rarr;</span>
-    <div class="flow-box" style="background:var(--dgreen);color:var(--gold)">Our platform<br>fractionalizes</div>
+    <div class="flow-box" style="background:var(--dgreen);color:var(--gold)">Developer lists on<br>our platform</div>
     <span class="flow-arrow">&rarr;</span>
-    <div class="flow-box" style="background:var(--dgold);color:var(--bg)">Investors buy fractions<br>(Crowd / Institutional)</div>
+    <div class="flow-box" style="background:var(--dgold);color:var(--bg)">Platform fractionalizes &amp;<br>sells to investors</div>
   </div>
 </section>
 
@@ -554,15 +636,17 @@ footer{padding:2.5rem 1.25rem;text-align:center;color:var(--gray);font-size:0.75
 <section>
   <span class="section-label reveal-right">10 &mdash; Key Risks</span>
   <h2 class="reveal-right">What could go <em>wrong</em></h2>
-  <div class="table-wrap reveal"><table class="data-table"><thead><tr><th>Risk</th><th>Sev.</th><th>Mitigant</th></tr></thead><tbody>
-    <tr><td>REGA sandbox rejection</td><td style="color:var(--red)">High</td><td>Pre-engage REGA; launch SPV first</td></tr>
-    <tr><td>Developer default/vacancy</td><td style="color:var(--red)">High</td><td>Post-construction; pre-tenanted; 5yr leases</td></tr>
-    <tr><td>Ghanem captures market</td><td style="color:var(--orange)">Med</td><td>Residential; developer-pays; lower costs</td></tr>
-    <tr><td>Low investor demand</td><td style="color:var(--orange)">Med</td><td>Cross-distribute via 340K+ investors</td></tr>
-    <tr><td>Regulatory changes</td><td style="color:var(--orange)">Med</td><td>Dual-track: SPV + token-ready</td></tr>
-    <tr><td>RETT compresses returns</td><td>Low</td><td>All competitors face same tax</td></tr>
-    <tr><td>Bad deal / reputation</td><td style="color:var(--red)">High</td><td>Taqyeem + Fahis + Shariah per deal</td></tr>
-  </tbody></table></div>
+
+  <div class="risk-items reveal stagger">
+    <div class="risk-item" style="--i:0"><span class="risk-sev high">High</span><div class="risk-content"><div class="risk-name">REGA sandbox rejection</div><div class="risk-mit">Pre-engage REGA; launch SPV first; hire regulatory counsel</div></div></div>
+    <div class="risk-item" style="--i:1"><span class="risk-sev high">High</span><div class="risk-content"><div class="risk-name">Developer default / vacancy</div><div class="risk-mit">Post-construction only; pre-tenanted; 5-year lease contracts</div></div></div>
+    <div class="risk-item" style="--i:2"><span class="risk-sev med">Med</span><div class="risk-content"><div class="risk-name">Ghanem captures market</div><div class="risk-mit">Residential focus; developer-pays model; lower investor costs</div></div></div>
+    <div class="risk-item" style="--i:3"><span class="risk-sev med">Med</span><div class="risk-content"><div class="risk-name">Insufficient investor demand</div><div class="risk-mit">Cross-distribute via Manafa/Forus (340K+ combined investors)</div></div></div>
+    <div class="risk-item" style="--i:4"><span class="risk-sev med">Med</span><div class="risk-content"><div class="risk-name">Regulatory framework changes</div><div class="risk-mit">Dual-track architecture: SPV + token-ready from day one</div></div></div>
+    <div class="risk-item" style="--i:5"><span class="risk-sev low">Low</span><div class="risk-content"><div class="risk-name">5% RETT compresses returns</div><div class="risk-mit">Unavoidable; all competitors face same government tax</div></div></div>
+    <div class="risk-item" style="--i:6"><span class="risk-sev high">High</span><div class="risk-content"><div class="risk-name">Bad deal damages reputation</div><div class="risk-mit">Taqyeem appraisal + Fahis inspection + Shariah opinion per deal</div></div></div>
+  </div>
+
   <div class="kv reveal">
     <div class="kv-box kill"><h4>What would kill this</h4><ul><li>Developers refuse to pay 4&ndash;5%</li><li>REGA rejects sandbox</li><li>Ghanem launches residential + dev-pays</li></ul></div>
     <div class="kv-box validate"><h4>What would validate this</h4><ul><li>3+ developers say &ldquo;yes&rdquo; to 4&ndash;5%</li><li>REGA sandbox accepted</li><li>First deal fills in &lt;21 days</li></ul></div>
@@ -587,21 +671,10 @@ footer{padding:2.5rem 1.25rem;text-align:center;color:var(--gray);font-size:0.75
   <h2 class="reveal-right">Go or <em>no-go?</em></h2>
   <div class="compare-cols reveal">
     <div class="compare-col go"><h3>Reasons to Go</h3><ul>
-      <li>SAR 2.3T market with structural supply gap</li>
-      <li>Government built tokenization rails</li>
-      <li>No competitor solves developer exit</li>
-      <li>Developer-pays = most investor-friendly</li>
-      <li>REGA deadline creates urgency</li>
-      <li>Partners provide day-1 pipeline</li>
-      <li>SAR 7.6M filled in 15 days by $667K startup</li>
+      <li>SAR 2.3T market with structural supply gap</li><li>Government built tokenization rails</li><li>No competitor solves developer exit</li><li>Developer-pays = most investor-friendly</li><li>REGA deadline creates urgency</li><li>Partners provide day-1 pipeline</li><li>SAR 7.6M filled in 15 days by $667K startup</li>
     </ul></div>
     <div class="compare-col wait"><h3>Reasons to Wait</h3><ul>
-      <li>Ghanem: 18-month head start + $7.1M</li>
-      <li>Requires SAR 3&ndash;5M seed capital</li>
-      <li>18&ndash;24 months to first revenue</li>
-      <li>REGA approval not guaranteed</li>
-      <li>Market may consolidate</li>
-      <li>Dev willingness to pay 4&ndash;5% is unvalidated</li>
+      <li>Ghanem: 18-month head start + $7.1M</li><li>Requires SAR 3&ndash;5M seed capital</li><li>18&ndash;24 months to first revenue</li><li>REGA approval not guaranteed</li><li>Market may consolidate</li><li>Dev willingness to pay 4&ndash;5% is unvalidated</li>
     </ul></div>
   </div>
   <div class="cta reveal-scale">
@@ -611,127 +684,88 @@ footer{padding:2.5rem 1.25rem;text-align:center;color:var(--gray);font-size:0.75
   </div>
 </section>
 
-<!-- BACKUP ZONE -->
+<!-- BACKUP -->
 <div class="backup-zone" id="backup">
 <section style="text-align:center"><div class="reveal"><span class="section-label">Backup Reference</span><h2>Detailed <em>Appendix</em></h2><p style="color:var(--gray);font-size:0.9rem">Tap to expand each section</p><div class="divider" style="margin:1rem auto"></div></div></section>
 
-<!-- BACKUP A -->
-<section>
-<div class="accordion-toggle" onclick="this.classList.toggle('open');this.nextElementSibling.classList.toggle('open')">
-  <div><span class="section-label">Backup A</span><h2>Lifecycle: <em>Who participates when</em></h2></div>
-  <span class="accordion-chevron">&#x25BC;</span>
-</div>
-<div class="accordion-body">
-  <div class="table-wrap"><table class="data-table"><thead><tr><th>Player</th><th style="text-align:center">Construction</th><th style="text-align:center">Completion</th><th style="text-align:center">Exit</th><th style="text-align:center">Rental</th><th style="text-align:center">Inv. Exit</th></tr></thead><tbody>
-    <tr><td>Banks / REDF</td><td style="text-align:center">&bull;</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td>Safqah</td><td style="text-align:center">&bull;</td><td></td><td></td><td></td><td></td></tr>
-    <tr><td>Wafi</td><td style="text-align:center">&bull;</td><td style="text-align:center">&bull;</td><td></td><td></td><td></td></tr>
-    <tr><td>Developer</td><td style="text-align:center">&bull;</td><td style="text-align:center">&bull;</td><td style="text-align:center">&bull;</td><td></td><td></td></tr>
-    <tr style="font-weight:700;color:var(--gold)"><td>OUR PLATFORM</td><td></td><td></td><td style="text-align:center">&bull;</td><td style="text-align:center">&bull;</td><td style="text-align:center">&bull;</td></tr>
-    <tr><td>Ghanem</td><td></td><td></td><td style="text-align:center">&bull;</td><td style="text-align:center">&bull;</td><td></td></tr>
-    <tr><td>HissaTech</td><td></td><td></td><td style="text-align:center">&bull;</td><td style="text-align:center">&bull;</td><td></td></tr>
-    <tr><td>Stake</td><td></td><td></td><td style="text-align:center">&bull;</td><td style="text-align:center">&bull;</td><td style="text-align:center">&bull;</td></tr>
-    <tr><td>Ejar</td><td></td><td></td><td></td><td style="text-align:center">&bull;</td><td></td></tr>
-    <tr><td>PM Company</td><td></td><td></td><td></td><td style="text-align:center">&bull;</td><td></td></tr>
-    <tr><td>Micro-Investors</td><td></td><td></td><td style="text-align:center">&bull;</td><td style="text-align:center">&bull;</td><td style="text-align:center">&bull;</td></tr>
-  </tbody></table></div>
-</div></section>
+<section><div class="accordion-toggle" onclick="this.classList.toggle('open');this.nextElementSibling.classList.toggle('open')"><div><span class="section-label">Backup A</span><h2>Lifecycle: <em>Who participates when</em></h2></div><span class="accordion-chevron">&#x25BC;</span></div>
+<div class="accordion-body"><div class="table-wrap"><table class="data-table"><thead><tr><th>Player</th><th style="text-align:center">Constr.</th><th style="text-align:center">Compl.</th><th style="text-align:center">Exit</th><th style="text-align:center">Rental</th><th style="text-align:center">Inv.Exit</th></tr></thead><tbody>
+<tr><td>Banks/REDF</td><td style="text-align:center">&bull;</td><td></td><td></td><td></td><td></td></tr>
+<tr><td>Safqah</td><td style="text-align:center">&bull;</td><td></td><td></td><td></td><td></td></tr>
+<tr><td>Wafi</td><td style="text-align:center">&bull;</td><td style="text-align:center">&bull;</td><td></td><td></td><td></td></tr>
+<tr><td>Developer</td><td style="text-align:center">&bull;</td><td style="text-align:center">&bull;</td><td style="text-align:center">&bull;</td><td></td><td></td></tr>
+<tr style="font-weight:700;color:var(--gold)"><td>OUR PLATFORM</td><td></td><td></td><td style="text-align:center">&bull;</td><td style="text-align:center">&bull;</td><td style="text-align:center">&bull;</td></tr>
+<tr><td>Ghanem</td><td></td><td></td><td style="text-align:center">&bull;</td><td style="text-align:center">&bull;</td><td></td></tr>
+<tr><td>HissaTech</td><td></td><td></td><td style="text-align:center">&bull;</td><td style="text-align:center">&bull;</td><td></td></tr>
+<tr><td>Stake</td><td></td><td></td><td style="text-align:center">&bull;</td><td style="text-align:center">&bull;</td><td style="text-align:center">&bull;</td></tr>
+<tr><td>Ejar</td><td></td><td></td><td></td><td style="text-align:center">&bull;</td><td></td></tr>
+<tr><td>PM Co.</td><td></td><td></td><td></td><td style="text-align:center">&bull;</td><td></td></tr>
+<tr><td>Investors</td><td></td><td></td><td style="text-align:center">&bull;</td><td style="text-align:center">&bull;</td><td style="text-align:center">&bull;</td></tr>
+</tbody></table></div></div></section>
 
-<!-- BACKUP B -->
-<section>
-<div class="accordion-toggle" onclick="this.classList.toggle('open');this.nextElementSibling.classList.toggle('open')">
-  <div><span class="section-label">Backup B</span><h2>Legal Structure <em>Comparison</em></h2></div>
-  <span class="accordion-chevron">&#x25BC;</span>
-</div>
-<div class="accordion-body">
-  <div class="table-wrap"><table class="data-table"><thead><tr><th></th><th>SPV/LLC</th><th>RER Token</th><th>CMA Fund</th><th>Sukuk</th></tr></thead><tbody>
-    <tr><td>Regulator</td><td>REGA+MoC</td><td>REGA sandbox</td><td>CMA</td><td>CMA</td></tr>
-    <tr><td>Investor owns</td><td>LLC shares</td><td>Registry fraction</td><td>Fund units</td><td>Debt cert.</td></tr>
-    <tr><td>Feels like</td><td>Company shares</td><td>Real landlord</td><td>Mutual fund</td><td>Lending</td></tr>
-    <tr><td>2nd market</td><td>Very difficult</td><td>Enabled (pending)</td><td>Redemption</td><td>Maturity</td></tr>
-    <tr><td>Reg. load</td><td>Lowest</td><td>Medium</td><td>Highest</td><td>High</td></tr>
-    <tr><td>Cost/deal</td><td>SAR 5&ndash;15K</td><td>Near-zero</td><td>Fund structure</td><td>SAR 20&ndash;50K</td></tr>
-    <tr><td>Scalability</td><td>Poor</td><td>Excellent</td><td>Good</td><td>Medium</td></tr>
-    <tr><td>Trust</td><td>Lowest</td><td>Highest</td><td>High</td><td>High</td></tr>
-    <tr><td>Best for</td><td>Quick launch</td><td>Long-term moat</td><td>Foreign inv.</td><td>Dev financing</td></tr>
-  </tbody></table></div>
-  <div class="big-quote"><p style="font-size:0.95rem">Launch SPV (speed) &rarr; Apply sandbox (Apr 30) &rarr; Target: RER tokenization (moat)</p></div>
-</div></section>
+<section><div class="accordion-toggle" onclick="this.classList.toggle('open');this.nextElementSibling.classList.toggle('open')"><div><span class="section-label">Backup B</span><h2>Legal Structure <em>Comparison</em></h2></div><span class="accordion-chevron">&#x25BC;</span></div>
+<div class="accordion-body"><div class="table-wrap"><table class="data-table"><thead><tr><th></th><th>SPV/LLC</th><th>RER Token</th><th>CMA Fund</th><th>Sukuk</th></tr></thead><tbody>
+<tr><td>Regulator</td><td>REGA+MoC</td><td>REGA sandbox</td><td>CMA</td><td>CMA</td></tr>
+<tr><td>Owns</td><td>LLC shares</td><td>Registry frac.</td><td>Fund units</td><td>Debt cert.</td></tr>
+<tr><td>Feels like</td><td>Co. shares</td><td>Real landlord</td><td>Mutual fund</td><td>Lending</td></tr>
+<tr><td>2nd market</td><td>Very hard</td><td>Pending</td><td>Redemption</td><td>Maturity</td></tr>
+<tr><td>Reg. load</td><td>Lowest</td><td>Medium</td><td>Highest</td><td>High</td></tr>
+<tr><td>Cost/deal</td><td>5&ndash;15K</td><td>Near-zero</td><td>Fund struct.</td><td>20&ndash;50K</td></tr>
+<tr><td>Scale</td><td>Poor</td><td>Excellent</td><td>Good</td><td>Medium</td></tr>
+<tr><td>Trust</td><td>Lowest</td><td>Highest</td><td>High</td><td>High</td></tr>
+<tr><td>Best for</td><td>Quick launch</td><td>Moat</td><td>Foreign inv.</td><td>Dev finance</td></tr>
+</tbody></table></div><div class="big-quote"><p style="font-size:0.95rem">Launch SPV (speed) &rarr; Sandbox (Apr 30) &rarr; RER tokenization (moat)</p></div></div></section>
 
-<!-- BACKUP C -->
-<section>
-<div class="accordion-toggle" onclick="this.classList.toggle('open');this.nextElementSibling.classList.toggle('open')">
-  <div><span class="section-label">Backup C</span><h2>Ghanem &mdash; <em>Full Details</em></h2></div>
-  <span class="accordion-chevron">&#x25BC;</span>
-</div>
-<div class="accordion-body">
-  <div class="table-wrap"><table class="data-table"><thead><tr><th style="width:100px">Item</th><th>Details</th></tr></thead><tbody>
-    <tr><td>Entity</td><td>Ghanem AlOula IT Co (Simplified JSC), CR: 1009203129, Feb 2025</td></tr>
-    <tr><td>Funding</td><td>$7.1M from Al-Romaih Group (Nov 2025)</td></tr>
-    <tr><td>Founders</td><td>Saleh Al-Ghamdi (CEO) + Amr Essam</td></tr>
-    <tr><td>Regulator</td><td>REGA PropTech Sandbox + FAL License 1200035496</td></tr>
-    <tr><td>Structure</td><td>Tokenized co-ownership via RER blockchain (not SPV)</td></tr>
-    <tr><td>Deal</td><td>Office, Qortuba, Riyadh &mdash; SAR 6.85M &mdash; 23 days to fill</td></tr>
-    <tr><td>Tokens</td><td>63,000 at SAR 108.75 each</td></tr>
-    <tr><td>Fees</td><td>Platform: 3.75% + RETT: 5% = 8.75%. Brokerage: waived</td></tr>
-    <tr><td>Returns</td><td>12.69% annual / 38.07% total (3yr) / 5.3% cap appreciation</td></tr>
-    <tr><td>Contract</td><td>3yr. Investor waives all individual rights</td></tr>
-    <tr><td>Secondary</td><td>Not live. 'After REGA launches trading option'</td></tr>
-    <tr><td>Risk</td><td>Clause 3.7: reserves right to charge additional future fees</td></tr>
-  </tbody></table></div>
-  <p class="source">Source: Ghanem app screenshots, investor contract, token purchase agreement (Feb 2026)</p>
-</div></section>
+<section><div class="accordion-toggle" onclick="this.classList.toggle('open');this.nextElementSibling.classList.toggle('open')"><div><span class="section-label">Backup C</span><h2>Ghanem &mdash; <em>Full Details</em></h2></div><span class="accordion-chevron">&#x25BC;</span></div>
+<div class="accordion-body"><div class="data-list">
+<div class="data-item"><span class="data-item-label">Entity</span><span class="data-item-val">Ghanem AlOula IT Co, CR: 1009203129</span></div>
+<div class="data-item"><span class="data-item-label">Funding</span><span class="data-item-val">$7.1M &middot; Al-Romaih Group (Nov 2025)</span></div>
+<div class="data-item"><span class="data-item-label">Founders</span><span class="data-item-val">Saleh Al-Ghamdi + Amr Essam</span></div>
+<div class="data-item"><span class="data-item-label">Regulator</span><span class="data-item-val">REGA Sandbox + FAL 1200035496</span></div>
+<div class="data-item"><span class="data-item-label">Structure</span><span class="data-item-val">RER blockchain (not SPV)</span></div>
+<div class="data-item"><span class="data-item-label">Deal</span><span class="data-item-val">Office, Qortuba &middot; SAR 6.85M &middot; 23 days</span></div>
+<div class="data-item"><span class="data-item-label">Tokens</span><span class="data-item-val">63,000 at SAR 108.75</span></div>
+<div class="data-item"><span class="data-item-label">Fees</span><span class="data-item-val">3.75% + 5% RETT = 8.75%</span></div>
+<div class="data-item"><span class="data-item-label">Returns</span><span class="data-item-val">12.69% annual / 38.07% (3yr)</span></div>
+<div class="data-item"><span class="data-item-label">Contract</span><span class="data-item-val">3yr. Investor waives all rights</span></div>
+<div class="data-item"><span class="data-item-label">Secondary</span><span class="data-item-val">Not live yet</span></div>
+<div class="data-item"><span class="data-item-label">Risk</span><span class="data-item-val" style="color:var(--red)">Clause 3.7: future fees reserved</span></div>
+</div><p class="source">Source: Ghanem app, contract, token agreement (Feb 2026)</p></div></section>
 
-<!-- BACKUP D -->
-<section>
-<div class="accordion-toggle" onclick="this.classList.toggle('open');this.nextElementSibling.classList.toggle('open')">
-  <div><span class="section-label">Backup D</span><h2>HissaTech &mdash; <em>Full Details</em></h2></div>
-  <span class="accordion-chevron">&#x25BC;</span>
-</div>
-<div class="accordion-body">
-  <div class="table-wrap"><table class="data-table"><thead><tr><th style="width:100px">Item</th><th>Details</th></tr></thead><tbody>
-    <tr><td>Entity</td><td>Hisas Alowla for IT (Unlisted JSC), CR: 1009078890</td></tr>
-    <tr><td>Funding</td><td>$667K pre-seed from angels (Sep 2024)</td></tr>
-    <tr><td>Regulator</td><td>REGA licensed</td></tr>
-    <tr><td>Structure</td><td>LLC/SPV per deal. Capital: SAR 50K, 5,000 shares</td></tr>
-    <tr><td>Deal</td><td>Al-Tahawul: Res. building, Al-Dhubbat, Riyadh. 8 apts + 2 service</td></tr>
-    <tr><td>Tenant</td><td>Global retail company (5yr lease, executive housing)</td></tr>
-    <tr><td>Financials</td><td>Property: SAR 7.015M / Appraised: SAR 7.48M (6% below)</td></tr>
-    <tr><td>Fees (up)</td><td>RETT 5% + Brokerage 2.5% + Arrangement 0.57% + Other = 8.31%</td></tr>
-    <tr><td>Fees (on)</td><td>5% of rental income</td></tr>
-    <tr><td>Fees (exit)</td><td>10% of capital gains</td></tr>
-    <tr><td>Returns</td><td>Gross 8.98% / Net 7.50% / Cap 5% / Total 12.50%</td></tr>
-    <tr><td>Minimum</td><td>SAR 3,070 (2 shares = 0.04%)</td></tr>
-    <tr><td>Shariah</td><td>Dr. Youssef Al-Shubaily (AAOIFI)</td></tr>
-    <tr><td>Inspection</td><td>Fahis FHS-25362: 81%, 6 high-priority issues</td></tr>
-    <tr><td>Speed</td><td>100% funded in 15 days</td></tr>
-  </tbody></table></div>
-  <p class="source">Source: HissaTech investment brief, Taqyeem appraisal, Shariah opinion (Jun&ndash;Dec 2025)</p>
-</div></section>
+<section><div class="accordion-toggle" onclick="this.classList.toggle('open');this.nextElementSibling.classList.toggle('open')"><div><span class="section-label">Backup D</span><h2>HissaTech &mdash; <em>Full Details</em></h2></div><span class="accordion-chevron">&#x25BC;</span></div>
+<div class="accordion-body"><div class="data-list">
+<div class="data-item"><span class="data-item-label">Entity</span><span class="data-item-val">Hisas Alowla for IT, CR: 1009078890</span></div>
+<div class="data-item"><span class="data-item-label">Funding</span><span class="data-item-val">$667K pre-seed (Sep 2024)</span></div>
+<div class="data-item"><span class="data-item-label">Regulator</span><span class="data-item-val">REGA licensed</span></div>
+<div class="data-item"><span class="data-item-label">Structure</span><span class="data-item-val">LLC/SPV per deal &middot; SAR 50K cap</span></div>
+<div class="data-item"><span class="data-item-label">Deal</span><span class="data-item-val">Al-Tahawul, Al-Dhubbat &middot; 8 apts</span></div>
+<div class="data-item"><span class="data-item-label">Tenant</span><span class="data-item-val">Global retail co &middot; 5yr lease</span></div>
+<div class="data-item"><span class="data-item-label">Price</span><span class="data-item-val">SAR 7.015M (appraised 7.48M)</span></div>
+<div class="data-item"><span class="data-item-label">Fees (up)</span><span class="data-item-val">RETT 5% + Broker 2.5% + Other = 8.31%</span></div>
+<div class="data-item"><span class="data-item-label">Fees (on)</span><span class="data-item-val">5% of rental income</span></div>
+<div class="data-item"><span class="data-item-label">Fees (exit)</span><span class="data-item-val">10% of capital gains</span></div>
+<div class="data-item"><span class="data-item-label">Returns</span><span class="data-item-val">Net 7.50% / Total 12.50%</span></div>
+<div class="data-item"><span class="data-item-label">Minimum</span><span class="data-item-val">SAR 3,070 (0.04%)</span></div>
+<div class="data-item"><span class="data-item-label">Shariah</span><span class="data-item-val">Dr. Al-Shubaily (AAOIFI)</span></div>
+<div class="data-item"><span class="data-item-label">Inspection</span><span class="data-item-val">Fahis: 81%, 6 high-priority</span></div>
+<div class="data-item"><span class="data-item-label">Speed</span><span class="data-item-val" style="color:var(--green)">100% funded in 15 days</span></div>
+</div><p class="source">Source: Investment brief, Taqyeem, Shariah opinion (Jun&ndash;Dec 2025)</p></div></section>
 
-<!-- BACKUP E -->
-<section>
-<div class="accordion-toggle" onclick="this.classList.toggle('open');this.nextElementSibling.classList.toggle('open')">
-  <div><span class="section-label">Backup E</span><h2>Stake &mdash; <em>Full Details</em></h2></div>
-  <span class="accordion-chevron">&#x25BC;</span>
-</div>
-<div class="accordion-body">
-  <div class="table-wrap"><table class="data-table"><thead><tr><th style="width:100px">Item</th><th>Details</th></tr></thead><tbody>
-    <tr><td>Origin</td><td>Dubai-based (DIFC), expanding into KSA</td></tr>
-    <tr><td>Scale</td><td>$350M+ invested, 500+ properties, 1M+ investors, 186 countries</td></tr>
-    <tr><td>KSA</td><td>CMA FinTech Lab (License 2023-53-5)</td></tr>
-    <tr><td>UAE</td><td>DFSA regulated</td></tr>
-    <tr><td>KSA struct.</td><td>Fund units. Investors do NOT own property</td></tr>
-    <tr><td>Fees</td><td>Acq 1.5% + KYC 0.20% + Exit 2.5% + Transfer 2.5%</td></tr>
-    <tr><td>KSA offer</td><td>RE funds. SAR 500 min. SAR 135M raised</td></tr>
-    <tr><td>Returns</td><td>Avg 10.3% (2023)</td></tr>
-    <tr><td>Strength</td><td>Global brand, scale, CMA-regulated, polished tech</td></tr>
-    <tr><td>Weakness</td><td>No direct ownership in KSA. Fund units only</td></tr>
-  </tbody></table></div>
-  <p class="source">Source: Stake app, KSA fund disclosures, DFSA registry (Mar 2026)</p>
-</div></section>
+<section><div class="accordion-toggle" onclick="this.classList.toggle('open');this.nextElementSibling.classList.toggle('open')"><div><span class="section-label">Backup E</span><h2>Stake &mdash; <em>Full Details</em></h2></div><span class="accordion-chevron">&#x25BC;</span></div>
+<div class="accordion-body"><div class="data-list">
+<div class="data-item"><span class="data-item-label">Origin</span><span class="data-item-val">Dubai (DIFC), expanding KSA</span></div>
+<div class="data-item"><span class="data-item-label">Scale</span><span class="data-item-val">$350M+ &middot; 500+ properties &middot; 1M+ inv</span></div>
+<div class="data-item"><span class="data-item-label">KSA</span><span class="data-item-val">CMA FinTech Lab 2023-53-5</span></div>
+<div class="data-item"><span class="data-item-label">UAE</span><span class="data-item-val">DFSA regulated</span></div>
+<div class="data-item"><span class="data-item-label">KSA structure</span><span class="data-item-val">Fund units (NOT property)</span></div>
+<div class="data-item"><span class="data-item-label">Fees</span><span class="data-item-val">Acq 1.5% + KYC 0.2% + Exit 2.5%</span></div>
+<div class="data-item"><span class="data-item-label">KSA offer</span><span class="data-item-val">RE funds &middot; SAR 500 min &middot; SAR 135M</span></div>
+<div class="data-item"><span class="data-item-label">Returns</span><span class="data-item-val">Avg 10.3% (2023)</span></div>
+<div class="data-item"><span class="data-item-label">Strength</span><span class="data-item-val">Brand, scale, CMA, tech</span></div>
+<div class="data-item"><span class="data-item-label">Weakness</span><span class="data-item-val" style="color:var(--red)">No ownership in KSA, fund only</span></div>
+</div><p class="source">Source: Stake app, KSA fund disclosures, DFSA (Mar 2026)</p></div></section>
 
-</div><!-- end backup-zone -->
+</div>
 
 <footer>
   <p>Confidential &mdash; Developer Exit Accelerator &mdash; March 2026</p>
