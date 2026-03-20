@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Decision Framework — Developer Exit Accelerator</title>
+<meta name="description" content="Internal decision framework for tokenized real estate fractional ownership platform. Assumptions tracker, REIT comparison, and validation roadmap.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x1f9ed;</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ── DESIGN SYSTEM (from index.html) ── */
+:root {
+  --bg: #060F0A; --bg2: #0A1A14; --bg-backup: #050C08;
+  --card: #0F2318; --card2: #132E1F;
+  --green: #00C853; --green-dim: #00C85340; --dgreen: #1B5E20;
+  --gold: #FFD54F; --gold-dim: #FFD54F30; --dgold: #D4A843;
+  --white: #F0F4F2; --light: #CFD8DC; --gray: #90A4AE;
+  --red: #EF5350; --orange: #FFA726; --blue: #42A5F5; --teal: #00897B; --purple: #AB47BC;
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-body);background:var(--bg);color:var(--light);overflow-x:hidden;line-height:1.6}
+::selection{background:var(--green-dim);color:var(--white)}
+body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:9999}
+
+/* ANIMATIONS */
+.reveal{opacity:0;transform:translateY(30px);transition:opacity 0.7s cubic-bezier(0.16,1,0.3,1),transform 0.7s cubic-bezier(0.16,1,0.3,1)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-left{opacity:0;transform:translateX(-40px);transition:opacity 0.7s cubic-bezier(0.16,1,0.3,1),transform 0.7s cubic-bezier(0.16,1,0.3,1)}
+.reveal-left.visible{opacity:1;transform:translateX(0)}
+.reveal-right{opacity:0;transform:translateX(40px);transition:opacity 0.7s cubic-bezier(0.16,1,0.3,1),transform 0.7s cubic-bezier(0.16,1,0.3,1)}
+.reveal-right.visible{opacity:1;transform:translateX(0)}
+.reveal-scale{opacity:0;transform:scale(0.94);transition:opacity 0.7s cubic-bezier(0.16,1,0.3,1),transform 0.7s cubic-bezier(0.16,1,0.3,1)}
+.reveal-scale.visible{opacity:1;transform:scale(1)}
+.stagger>*{transition-delay:calc(var(--i,0)*0.1s)}
+@media(prefers-reduced-motion:reduce){.reveal,.reveal-left,.reveal-right,.reveal-scale{transition:none;opacity:1;transform:none}}
+
+/* PROGRESS BAR */
+.progress-bar{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--green),var(--gold));z-index:200;width:0;transition:width 0.1s;pointer-events:none}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:0.75rem 1.25rem;display:flex;justify-content:space-between;align-items:center;backdrop-filter:blur(20px);background:#060F0A;border-bottom:1px solid rgba(0,200,83,0.1);transition:all 0.3s}
+nav::before{content:'';position:absolute;bottom:100%;left:0;right:0;height:50px;background:#060F0A}
+nav.scrolled{padding:0.5rem 1.25rem}
+.nav-logo{font-family:var(--font-display);font-size:1rem;font-weight:700;color:var(--gold);letter-spacing:-0.02em;white-space:nowrap}
+.nav-links{display:flex;gap:1.25rem;align-items:center}
+.nav-links a{font-size:0.72rem;font-weight:500;color:var(--gray);text-decoration:none;text-transform:uppercase;letter-spacing:0.06em;transition:color 0.3s;padding-bottom:2px;border-bottom:2px solid transparent}
+.nav-links a:hover,.nav-links a.active{color:var(--green);border-bottom-color:var(--green)}
+.nav-badge{font-size:0.6rem;padding:0.2rem 0.5rem;background:rgba(239,83,80,0.15);color:var(--red);border-radius:100px;font-weight:600;letter-spacing:0.05em}
+
+/* HAMBURGER */
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:8px;z-index:110}
+.hamburger span{width:22px;height:2px;background:var(--green);border-radius:2px;transition:all 0.3s}
+.hamburger.open span:nth-child(1){transform:rotate(45deg) translate(5px,5px)}
+.hamburger.open span:nth-child(2){opacity:0}
+.hamburger.open span:nth-child(3){transform:rotate(-45deg) translate(5px,-5px)}
+.mobile-menu{display:none;position:fixed;inset:0;background:rgba(6,15,10,0.97);z-index:99;flex-direction:column;justify-content:center;align-items:center;gap:1.5rem;backdrop-filter:blur(20px)}
+.mobile-menu.open{display:flex}
+.mobile-menu a{font-family:var(--font-display);font-size:1.5rem;color:var(--light);text-decoration:none;transition:color 0.3s}
+.mobile-menu a:hover{color:var(--green)}
+
+/* SECTIONS */
+section{padding:4rem 1.25rem;max-width:1200px;margin:0 auto;position:relative}
+.section-label{font-family:var(--font-mono);font-size:0.65rem;text-transform:uppercase;letter-spacing:0.18em;color:var(--green);margin-bottom:0.5rem;display:block}
+h2{font-family:var(--font-display);font-size:clamp(1.6rem,4vw,3.2rem);font-weight:900;color:var(--white);line-height:1.15;margin-bottom:1.25rem;letter-spacing:-0.02em}
+h2 em{font-style:normal;color:var(--gold)}
+h3{font-family:var(--font-display);font-size:1.3rem;color:var(--white);margin-bottom:0.75rem}
+p.lead{font-size:clamp(0.95rem,2vw,1.15rem);color:var(--gray);line-height:1.7;max-width:700px}
+.source{font-size:0.7rem;color:#7B9A8E;font-style:italic;margin-top:1rem}
+
+/* HERO */
+.hero{min-height:60vh;display:flex;flex-direction:column;justify-content:center;padding:5rem 1.25rem 3rem;position:relative}
+.hero::before{content:'';position:absolute;top:0;right:-20%;width:70%;height:70%;background:radial-gradient(ellipse at center,var(--gold-dim) 0%,transparent 70%);pointer-events:none}
+.hero-eyebrow{font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:0.2em;color:var(--gold);margin-bottom:1rem;opacity:0;animation:fadeUp 0.8s 0.3s forwards}
+.hero h1{font-family:var(--font-display);font-size:clamp(2.2rem,7vw,5rem);font-weight:900;color:var(--white);line-height:1.05;letter-spacing:-0.03em;margin-bottom:1rem;opacity:0;animation:fadeUp 0.8s 0.5s forwards}
+.hero h1 span{color:var(--gold)}
+.hero-sub{font-size:clamp(1rem,2.5vw,1.3rem);color:var(--gray);max-width:600px;margin-bottom:1.5rem;opacity:0;animation:fadeUp 0.8s 0.7s forwards}
+@keyframes fadeUp{from{opacity:0;transform:translateY(25px)}to{opacity:1;transform:translateY(0)}}
+
+/* STAT STRIP */
+.stat-strip{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:rgba(0,200,83,0.1);border-radius:10px;overflow:hidden;margin:1.5rem 0}
+.stat-strip .stat{background:var(--card);padding:1.25rem 1rem;text-align:center;transition:background 0.3s}
+.stat-strip .stat-val{font-family:var(--font-display);font-size:clamp(1.3rem,3vw,1.8rem);font-weight:900;color:var(--green);display:block;margin-bottom:0.2rem}
+.stat-strip .stat-label{font-size:0.72rem;color:var(--gray);line-height:1.4}
+
+/* BIG QUOTE */
+.big-quote{background:var(--dgreen);padding:1.5rem;border-radius:10px;margin:1.5rem 0;position:relative;overflow:hidden}
+.big-quote::before{content:'';position:absolute;top:-50%;right:-20%;width:60%;height:200%;background:radial-gradient(ellipse,rgba(0,200,83,0.12),transparent);pointer-events:none}
+.big-quote p{font-family:var(--font-display);font-size:clamp(1rem,2.2vw,1.5rem);font-weight:700;color:var(--gold);line-height:1.4;position:relative}
+
+/* CARDS */
+.cards{display:grid;gap:1rem}
+.card{background:var(--card);border-radius:10px;padding:1.5rem;border:1px solid rgba(0,200,83,0.08);transition:transform 0.3s,border-color 0.3s,box-shadow 0.3s;position:relative;overflow:hidden}
+@media(hover:hover){.card:hover{transform:translateY(-3px);border-color:rgba(0,200,83,0.2);box-shadow:0 8px 30px rgba(0,0,0,0.3)}}
+.card-label{font-family:var(--font-mono);font-size:0.65rem;text-transform:uppercase;letter-spacing:0.12em;color:var(--green);margin-bottom:0.5rem}
+.card-val{font-family:var(--font-display);font-size:clamp(1.5rem,4vw,2rem);font-weight:900;color:var(--white);margin-bottom:0.4rem}
+.card-desc{font-size:0.85rem;color:var(--gray);line-height:1.5}
+.card-red{border-color:rgba(239,83,80,0.2)}.card-red .card-label{color:var(--red)}
+.card-gold{border-color:rgba(255,213,79,0.15);background:var(--dgreen)}.card-gold .card-label{color:var(--gold)}
+
+/* DATA LIST */
+.data-list{display:flex;flex-direction:column;gap:1px;background:rgba(0,200,83,0.08);border-radius:10px;overflow:hidden;margin:1rem 0}
+.data-item{display:flex;justify-content:space-between;align-items:center;padding:0.7rem 1rem;background:var(--card);gap:0.5rem}
+.data-item-label{font-size:0.8rem;color:var(--gray);flex:1}
+.data-item-val{font-size:0.8rem;color:var(--light);font-weight:600;text-align:right}
+.data-item-val.green{color:var(--green)}.data-item-val.red{color:var(--red)}.data-item-val.gold{color:var(--gold)}
+.data-item.highlight{background:var(--card2)}
+.data-item.highlight .data-item-label,.data-item.highlight .data-item-val{color:var(--green);font-weight:700}
+
+/* TABLE */
+.table-wrap{position:relative;overflow-x:auto;margin:1.5rem 0;-webkit-overflow-scrolling:touch;border-radius:10px}
+.data-table{width:100%;border-collapse:separate;border-spacing:0;font-size:0.78rem;min-width:700px}
+.data-table th{background:var(--dgreen);color:var(--white);padding:0.65rem 0.75rem;text-align:left;font-weight:600;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.04em;position:sticky;top:0;white-space:nowrap}
+.data-table th.hl{color:var(--gold);background:#1a4520}
+.data-table td{padding:0.55rem 0.75rem;border-bottom:1px solid rgba(0,200,83,0.06);color:var(--light);background:var(--card);transition:background 0.2s}
+.data-table tr:active td{background:var(--card2)}
+.data-table td:first-child{color:var(--gray);font-weight:500;position:sticky;left:0;background:var(--card);z-index:1}
+.data-table td.hl{background:rgba(27,94,32,0.15)}
+.data-table td.win{color:var(--green);font-weight:700}
+.data-table td.lose{color:var(--red);font-weight:600}
+.data-table td.draw{color:var(--gold)}
+
+/* COMPARE COLS */
+.compare-cols{display:grid;grid-template-columns:1fr;gap:1rem;margin:1.5rem 0}
+.compare-col{border-radius:10px;padding:1.5rem}
+.compare-col.go{background:var(--card);border:1px solid rgba(0,200,83,0.15)}
+.compare-col.wait{background:var(--card);border:1px solid rgba(239,83,80,0.15)}
+.compare-col h3{font-size:1.1rem;margin-bottom:1rem;padding-bottom:0.6rem;border-bottom:2px solid}
+.compare-col.go h3{color:var(--green);border-color:var(--green)}.compare-col.wait h3{color:var(--red);border-color:var(--red)}
+.compare-col li{list-style:none;padding:0.4rem 0 0.4rem 1.25rem;position:relative;font-size:0.85rem;color:var(--light)}
+.compare-col li::before{content:'';position:absolute;left:0;top:0.7rem;width:7px;height:7px;border-radius:50%}
+.compare-col.go li::before{background:var(--green)}.compare-col.wait li::before{background:var(--red)}
+
+/* ACCORDION */
+.accordion-toggle{display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:1rem 0;border:none;background:none;width:100%;text-align:left}
+.accordion-toggle h2{margin-bottom:0;pointer-events:none}
+.accordion-chevron{color:var(--dgold);font-size:1.2rem;transition:transform 0.3s;flex-shrink:0;margin-left:1rem}
+.accordion-toggle.open .accordion-chevron{transform:rotate(180deg)}
+.accordion-body{max-height:0;overflow:hidden;transition:max-height 0.4s ease}
+.accordion-body.open{max-height:5000px}
+
+/* DIVIDER */
+.divider{width:50px;height:3px;background:var(--green);margin:1.5rem 0;border-radius:2px}
+
+/* BACK TO TOP */
+.back-top{position:fixed;bottom:1.25rem;right:1.25rem;width:40px;height:40px;border-radius:50%;background:var(--dgreen);border:1px solid var(--green);color:var(--green);font-size:1rem;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transform:translateY(20px);transition:opacity 0.3s,transform 0.3s;z-index:90}
+.back-top.show{opacity:1;transform:translateY(0)}
+
+/* FOOTER */
+footer{padding:2.5rem 1.25rem;text-align:center;color:var(--gray);font-size:0.75rem;border-top:1px solid var(--card2)}
+
+/* GRID HELPERS */
+.grid-2{display:grid;grid-template-columns:1fr;gap:1rem}
+.grid-3{display:grid;grid-template-columns:1fr;gap:0.75rem}
+
+/* ── NEW: TRAFFIC LIGHT STATUS ── */
+.assumption-grid{display:grid;grid-template-columns:1fr;gap:0.75rem;margin:1.5rem 0}
+.assumption-item{background:var(--card);border-radius:10px;padding:1.25rem;border-left:4px solid;display:flex;gap:1rem;align-items:flex-start}
+.assumption-item.green{border-color:var(--green)}
+.assumption-item.yellow{border-color:var(--gold)}
+.assumption-item.red{border-color:var(--red)}
+.assumption-status{font-size:0.6rem;font-weight:700;padding:0.2rem 0.5rem;border-radius:4px;white-space:nowrap;flex-shrink:0;text-transform:uppercase;letter-spacing:0.06em}
+.assumption-status.green{background:rgba(0,200,83,0.15);color:var(--green)}
+.assumption-status.yellow{background:var(--gold-dim);color:var(--gold)}
+.assumption-status.red{background:rgba(239,83,80,0.15);color:var(--red)}
+.assumption-content{flex:1}
+.assumption-name{font-size:0.9rem;font-weight:600;color:var(--white);margin-bottom:0.3rem}
+.assumption-evidence{font-size:0.78rem;color:var(--gray);line-height:1.5}
+.assumption-next{font-size:0.72rem;color:var(--gold);margin-top:0.4rem;font-style:italic}
+
+/* ── NEW: CHECKLIST ── */
+.checklist{display:flex;flex-direction:column;gap:0.5rem;margin:1.5rem 0}
+.checklist-item{display:flex;align-items:flex-start;gap:0.75rem;padding:0.85rem 1rem;background:var(--card);border-radius:8px;border:1px solid rgba(0,200,83,0.06)}
+.checklist-check{width:22px;height:22px;border-radius:6px;border:2px solid var(--gray);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:0.7rem;margin-top:2px;cursor:pointer;transition:all 0.2s}
+.checklist-item.done .checklist-check{background:var(--green);border-color:var(--green);color:var(--bg)}
+.checklist-item.blocked .checklist-check{border-color:var(--red)}
+.checklist-body{flex:1}
+.checklist-title{font-size:0.85rem;font-weight:600;color:var(--white);margin-bottom:0.2rem}
+.checklist-item.done .checklist-title{text-decoration:line-through;color:var(--gray)}
+.checklist-meta{font-size:0.72rem;color:var(--gray);line-height:1.5}
+.checklist-blocker{font-size:0.72rem;color:var(--red);margin-top:0.2rem}
+
+/* ── NEW: DECISION GATES ── */
+.gate-timeline{display:flex;flex-direction:column;gap:0;margin:1.5rem 0;position:relative}
+.gate-timeline::before{content:'';position:absolute;left:15px;top:0;bottom:0;width:2px;background:linear-gradient(to bottom,var(--green),var(--gold),var(--red))}
+.gate{display:flex;gap:1.25rem;padding:1.5rem 0;position:relative}
+.gate-marker{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:0.85rem;font-weight:900;flex-shrink:0;z-index:1}
+.gate:nth-child(1) .gate-marker{background:var(--green);color:var(--bg)}
+.gate:nth-child(2) .gate-marker{background:var(--gold);color:var(--bg)}
+.gate:nth-child(3) .gate-marker{background:var(--orange);color:var(--bg)}
+.gate:nth-child(4) .gate-marker{background:var(--red);color:var(--white)}
+.gate-content{flex:1;background:var(--card);border-radius:10px;padding:1.25rem}
+.gate-date{font-family:var(--font-mono);font-size:0.7rem;color:var(--gold);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.4rem}
+.gate-question{font-family:var(--font-display);font-size:1.05rem;font-weight:700;color:var(--white);margin-bottom:0.5rem;line-height:1.3}
+.gate-criteria{font-size:0.8rem;color:var(--gray);line-height:1.6}
+.gate-cost{font-size:0.72rem;color:var(--green);margin-top:0.5rem;font-weight:500}
+
+/* ── NEW: STRIKETHROUGH FOR VALIDATED KILLS ── */
+.validated{text-decoration:line-through;color:var(--gray) !important;opacity:0.6}
+.validated::after{content:' ✓ VALIDATED';font-size:0.65rem;color:var(--green);text-decoration:none;font-weight:700;margin-left:0.5rem}
+
+/* ── NEW: QUESTION CARD ── */
+.q-card{background:var(--card);border-radius:10px;padding:1.5rem;border:1px solid rgba(255,213,79,0.1);margin-bottom:1rem}
+.q-card-q{font-family:var(--font-display);font-size:1.1rem;font-weight:700;color:var(--gold);margin-bottom:0.75rem;line-height:1.3}
+.q-card-section{margin-bottom:0.75rem}
+.q-card-label{font-family:var(--font-mono);font-size:0.6rem;text-transform:uppercase;letter-spacing:0.12em;color:var(--green);margin-bottom:0.3rem}
+.q-card-text{font-size:0.85rem;color:var(--light);line-height:1.6}
+.q-card-rec{background:rgba(27,94,32,0.3);border-radius:6px;padding:0.75rem;margin-top:0.5rem}
+.q-card-rec p{font-size:0.82rem;color:var(--green);font-weight:500}
+
+/* ── DESKTOP ── */
+@media(min-width:768px){
+  nav{padding:1rem 2rem}
+  nav.scrolled{padding:0.6rem 2rem}
+  section{padding:5rem 2rem}
+  .stat-strip{grid-template-columns:repeat(4,1fr)}
+  .compare-cols{grid-template-columns:1fr 1fr}
+  .grid-2{grid-template-columns:1fr 1fr}
+  .grid-3{grid-template-columns:1fr 1fr 1fr}
+  .assumption-grid{grid-template-columns:1fr 1fr}
+  .big-quote{padding:2.5rem}
+  .card{padding:2rem}
+  .data-table td:first-child{position:static}
+  .hamburger{display:none !important}
+}
+@media(max-width:767px){.nav-links{display:none}.hamburger{display:flex}}
+</style>
+</head>
+<body>
+
+<!-- PROGRESS BAR -->
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="nav-logo">Decision Framework</div>
+  <div class="nav-links">
+    <a href="#dashboard" data-section="dashboard">Dashboard</a>
+    <a href="#validated" data-section="validated">Validated</a>
+    <a href="#reits" data-section="reits">vs REITs</a>
+    <a href="#investor" data-section="investor">Investor Qs</a>
+    <a href="#rega" data-section="rega">REGA</a>
+    <a href="#killvalidate" data-section="killvalidate">Kill/Validate</a>
+    <a href="#gates" data-section="gates">Gates</a>
+    <span class="nav-badge">INTERNAL</span>
+  </div>
+  <div class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></div>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#dashboard" class="mm-link">Dashboard</a>
+  <a href="#validated" class="mm-link">Validated</a>
+  <a href="#reits" class="mm-link">vs REITs</a>
+  <a href="#investor" class="mm-link">Investor Qs</a>
+  <a href="#rega" class="mm-link">REGA</a>
+  <a href="#killvalidate" class="mm-link">Kill/Validate</a>
+  <a href="#gates" class="mm-link">Gates</a>
+</div>
+<button class="back-top" id="backTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Back to top">&uarr;</button>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-eyebrow">Internal Decision Framework &mdash; March 2026</div>
+  <h1>Should I <span>build this?</span></h1>
+  <p class="hero-sub">An honest assessment of what's validated, what isn't, and what needs to die or survive before committing. This is not a pitch &mdash; it's a decision tool.</p>
+</section>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- 01 ASSUMPTIONS DASHBOARD                    -->
+<!-- ═══════════════════════════════════════════ -->
+<section id="dashboard">
+  <span class="section-label reveal-left">01 &mdash; Assumptions Dashboard</span>
+  <h2 class="reveal-left">What do we <em>know?</em></h2>
+  <p class="lead reveal">Every assumption in the business case, scored honestly. Green = validated with evidence. Yellow = partially supported. Red = unvalidated hypothesis.</p>
+
+  <div class="stat-strip reveal">
+    <div class="stat"><span class="stat-val" style="color:var(--green)">3</span><span class="stat-label">Validated</span></div>
+    <div class="stat"><span class="stat-val" style="color:var(--gold)">4</span><span class="stat-label">Partially validated</span></div>
+    <div class="stat"><span class="stat-val" style="color:var(--red)">5</span><span class="stat-label">Unvalidated</span></div>
+    <div class="stat"><span class="stat-val">12</span><span class="stat-label">Total assumptions</span></div>
+  </div>
+
+  <h3 style="color:var(--green);margin-top:2rem" class="reveal">Validated</h3>
+  <div class="assumption-grid reveal stagger">
+    <div class="assumption-item green" style="--i:0">
+      <span class="assumption-status green">Validated</span>
+      <div class="assumption-content">
+        <div class="assumption-name">Developers will pay 4&ndash;5% for fast exit</div>
+        <div class="assumption-evidence">Multiple developers interviewed; expressed readiness to sign. This was the #1 risk &mdash; now cleared.</div>
+      </div>
+    </div>
+    <div class="assumption-item green" style="--i:1">
+      <span class="assumption-status green">Validated</span>
+      <div class="assumption-content">
+        <div class="assumption-name">Large housing gap exists (305K units in Riyadh)</div>
+        <div class="assumption-evidence">NHC, Knight Frank, JLL all confirm. 115K units/year demand. Not a hypothesis.</div>
+      </div>
+    </div>
+    <div class="assumption-item green" style="--i:2">
+      <span class="assumption-status green">Validated</span>
+      <div class="assumption-content">
+        <div class="assumption-name">REGA tokenization infrastructure exists</div>
+        <div class="assumption-evidence">First transaction completed Nov 2025 (NHC). Technical specifications being published early 2026. Sandbox open.</div>
+      </div>
+    </div>
+  </div>
+
+  <h3 style="color:var(--gold);margin-top:2rem" class="reveal">Partially Validated</h3>
+  <div class="assumption-grid reveal stagger">
+    <div class="assumption-item yellow" style="--i:0">
+      <span class="assumption-status yellow">Partial</span>
+      <div class="assumption-content">
+        <div class="assumption-name">No competitor solves developer exit</div>
+        <div class="assumption-evidence">Ghanem, HissaTech, Stake all charge the investor. None target developer exit. But Ghanem has $7.1M and could pivot.</div>
+        <div class="assumption-next">Monitor: Would Ghanem copy the developer-pays model?</div>
+      </div>
+    </div>
+    <div class="assumption-item yellow" style="--i:1">
+      <span class="assumption-status yellow">Partial</span>
+      <div class="assumption-content">
+        <div class="assumption-name">Unit economics work at 4&ndash;5% placement</div>
+        <div class="assumption-evidence">SAR 30,700 revenue per SAR 500K unit (Year 1). Breakeven ~100 units. Math works on paper. Untested in practice.</div>
+        <div class="assumption-next">Validate: Actual cost structure once legal, tech, and team costs are firmed up.</div>
+      </div>
+    </div>
+    <div class="assumption-item yellow" style="--i:2">
+      <span class="assumption-status yellow">Partial</span>
+      <div class="assumption-content">
+        <div class="assumption-name">REGA sandbox deadline creates real urgency</div>
+        <div class="assumption-evidence">April 30, 2026 deadline confirmed. But: sandbox may reopen, or SPV can launch without sandbox.</div>
+        <div class="assumption-next">Clarify: Is SPV a viable launch path if sandbox is missed?</div>
+      </div>
+    </div>
+    <div class="assumption-item yellow" style="--i:3">
+      <span class="assumption-status yellow">Partial</span>
+      <div class="assumption-content">
+        <div class="assumption-name">Riyadh 5-year rent freeze benefits us</div>
+        <div class="assumption-evidence">Confirmed: initial rent set freely, then frozen 5 years. Good for yield predictability. But also means no rental growth for 5 years.</div>
+        <div class="assumption-next">Model: Does the freeze compress returns enough to make us unattractive vs REITs?</div>
+      </div>
+    </div>
+  </div>
+
+  <h3 style="color:var(--red);margin-top:2rem" class="reveal">Unvalidated</h3>
+  <div class="assumption-grid reveal stagger">
+    <div class="assumption-item red" style="--i:0">
+      <span class="assumption-status red">Unvalidated</span>
+      <div class="assumption-content">
+        <div class="assumption-name">Investors will choose us over REITs</div>
+        <div class="assumption-evidence">No evidence yet. REITs offer instant liquidity, lower fees, and zero entry cost. We offer specific-asset ownership. Is that enough?</div>
+        <div class="assumption-next">Test: Survey / landing page. "Would you pay 5% upfront to own a specific apartment vs buying a REIT?"</div>
+      </div>
+    </div>
+    <div class="assumption-item red" style="--i:1">
+      <span class="assumption-status red">Unvalidated</span>
+      <div class="assumption-content">
+        <div class="assumption-name">We can fill a deal in &lt;21 days</div>
+        <div class="assumption-evidence">HissaTech filled SAR 7M in 15 days. Ghanem in 23 days. But they have existing investor bases. We have zero.</div>
+        <div class="assumption-next">Test: Can we reach investors through partner platforms (Manafa, Forus)?</div>
+      </div>
+    </div>
+    <div class="assumption-item red" style="--i:2">
+      <span class="assumption-status red">Unvalidated</span>
+      <div class="assumption-content">
+        <div class="assumption-name">Liquidity / exit problem is solvable</div>
+        <div class="assumption-evidence">No secondary market exists pre-tokenization. Investors may be trapped. This is the biggest investor fear.</div>
+        <div class="assumption-next">Design: Lock-up terms, annual property sale vote, or platform buyback mechanism.</div>
+      </div>
+    </div>
+    <div class="assumption-item red" style="--i:3">
+      <span class="assumption-status red">Unvalidated</span>
+      <div class="assumption-content">
+        <div class="assumption-name">REGA sandbox application will be accepted</div>
+        <div class="assumption-evidence">No engagement with REGA yet. Requirements still being researched. Co-founder with regulatory experience not yet identified.</div>
+        <div class="assumption-next">Action: Obtain application form, engage regulatory counsel, identify co-founder.</div>
+      </div>
+    </div>
+    <div class="assumption-item red" style="--i:4">
+      <span class="assumption-status red">Unvalidated</span>
+      <div class="assumption-content">
+        <div class="assumption-name">Multi-investor governance works at scale</div>
+        <div class="assumption-evidence">How do 100+ micro-investors make decisions about a single property? Untested model in Saudi market.</div>
+        <div class="assumption-next">Design: Centralized PM with transparency reporting. Reference how HissaTech handles this.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- 02 WHAT WE'VE VALIDATED                     -->
+<!-- ═══════════════════════════════════════════ -->
+<section id="validated">
+  <span class="section-label reveal-right">02 &mdash; What We've Validated</span>
+  <h2 class="reveal-right">The developer side <em>is real</em></h2>
+
+  <div class="big-quote reveal-scale"><p>Developers expressed readiness to sign. The #1 kill risk is cleared. What follows is a record of what we learned.</p></div>
+
+  <h3 class="reveal" style="margin-top:2rem">Interview Notes</h3>
+  <p class="lead reveal" style="margin-bottom:1rem">Fill in the details from your developer conversations:</p>
+
+  <div class="grid-2 reveal">
+    <div class="card card-gold">
+      <div class="card-label">Developer A</div>
+      <div class="card-desc" style="margin-bottom:0.5rem"><strong style="color:var(--white)">Company:</strong> <em style="color:var(--gold)">[Fill in name]</em></div>
+      <div class="card-desc" style="margin-bottom:0.5rem"><strong style="color:var(--white)">Key quote:</strong> <em style="color:var(--gold)">[What did they say about paying 4&ndash;5%?]</em></div>
+      <div class="card-desc" style="margin-bottom:0.5rem"><strong style="color:var(--white)">Terms they'd accept:</strong> <em style="color:var(--gold)">[Price, timeline, conditions]</em></div>
+      <div class="card-desc"><strong style="color:var(--white)">Their concern:</strong> <em style="color:var(--gold)">[Main reservation?]</em></div>
+    </div>
+    <div class="card card-gold">
+      <div class="card-label">Developer B</div>
+      <div class="card-desc" style="margin-bottom:0.5rem"><strong style="color:var(--white)">Company:</strong> <em style="color:var(--gold)">[Fill in name]</em></div>
+      <div class="card-desc" style="margin-bottom:0.5rem"><strong style="color:var(--white)">Key quote:</strong> <em style="color:var(--gold)">[What did they say about paying 4&ndash;5%?]</em></div>
+      <div class="card-desc" style="margin-bottom:0.5rem"><strong style="color:var(--white)">Terms they'd accept:</strong> <em style="color:var(--gold)">[Price, timeline, conditions]</em></div>
+      <div class="card-desc"><strong style="color:var(--white)">Their concern:</strong> <em style="color:var(--gold)">[Main reservation?]</em></div>
+    </div>
+  </div>
+
+  <h3 class="reveal" style="margin-top:2rem">What this validates</h3>
+  <div class="data-list reveal">
+    <div class="data-item highlight"><span class="data-item-label">Developer pain is real</span><span class="data-item-val green">Confirmed</span></div>
+    <div class="data-item highlight"><span class="data-item-label">4&ndash;5% pricing is acceptable</span><span class="data-item-val green">Confirmed</span></div>
+    <div class="data-item"><span class="data-item-label">Speed of exit matters more than price</span><span class="data-item-val gold">Likely</span></div>
+  </div>
+
+  <h3 class="reveal" style="margin-top:2rem">What's still NOT validated</h3>
+  <div class="data-list reveal">
+    <div class="data-item"><span class="data-item-label">Will developers refer other developers?</span><span class="data-item-val red">Unknown</span></div>
+    <div class="data-item"><span class="data-item-label">Will they list multiple units, not just one?</span><span class="data-item-val red">Unknown</span></div>
+    <div class="data-item"><span class="data-item-label">Will they list at full price or demand discount?</span><span class="data-item-val red">Unknown</span></div>
+    <div class="data-item"><span class="data-item-label">Deal flow volume: enough to sustain the platform?</span><span class="data-item-val red">Unknown</span></div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- 03 WHY NOT REITs?                           -->
+<!-- ═══════════════════════════════════════════ -->
+<section id="reits">
+  <span class="section-label reveal-left">03 &mdash; The REIT Question</span>
+  <h2 class="reveal-left">Why wouldn't investors just <em>buy a REIT?</em></h2>
+  <p class="lead reveal">This is the question we keep getting. Here's the honest, thorough answer.</p>
+
+  <h3 class="reveal" style="margin-top:2rem">Head-to-head comparison</h3>
+  <div class="table-wrap reveal">
+    <table class="data-table">
+      <thead>
+        <tr><th>Factor</th><th>Saudi REITs</th><th class="hl">Our Platform</th><th>Winner</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Minimum investment</td><td>SAR 500</td><td class="hl">SAR 1,000</td><td class="lose">REITs</td></tr>
+        <tr><td>Know which building you own</td><td>No (pooled fund)</td><td class="hl">Yes (specific unit)</td><td class="win">Us</td></tr>
+        <tr><td>Dividend yield</td><td>7&ndash;9%</td><td class="hl">&sim;7.5% net rental</td><td class="draw">Similar</td></tr>
+        <tr><td>Capital appreciation</td><td>Diluted across portfolio</td><td class="hl">Direct per-asset</td><td class="win">Us</td></tr>
+        <tr><td>Liquidity</td><td>Tadawul (instant)</td><td class="hl">No secondary market yet</td><td class="lose">REITs</td></tr>
+        <tr><td>Entry cost</td><td>&sim;0% (market price)</td><td class="hl">&sim;5% (RETT)</td><td class="lose">REITs</td></tr>
+        <tr><td>Exit cost</td><td>Brokerage (&sim;0.1%)</td><td class="hl">0% (target 0.5%)</td><td class="draw">Similar</td></tr>
+        <tr><td>Management fee</td><td>&sim;0.5%</td><td class="hl">1% + 2% PM</td><td class="lose">REITs</td></tr>
+        <tr><td>Shariah compliance</td><td>Fund-level certification</td><td class="hl">Per-asset Shariah opinion</td><td class="win">Us</td></tr>
+        <tr><td>Transparency</td><td>Quarterly fund reports</td><td class="hl">Per-unit real-time data</td><td class="win">Us</td></tr>
+        <tr><td>Regulatory maturity</td><td>CMA (16+ years)</td><td class="hl">REGA sandbox (new)</td><td class="lose">REITs</td></tr>
+        <tr><td>Recent performance</td><td>Down 16&ndash;24% vs TASI</td><td class="hl">Untested</td><td class="draw">Unknown</td></tr>
+        <tr><td>Investor control</td><td>None (fund mgr decides)</td><td class="hl">Governance TBD</td><td class="draw">TBD</td></tr>
+        <tr><td>Emotional ownership</td><td>"I own units in a fund"</td><td class="hl">"I own part of that building"</td><td class="win">Us</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="source reveal">Sources: Tadawul REIT listings; Jadwa REIT (7.34% yield); S&P Global Saudi REITs report; SimplyWall.st Saudi RE sector analysis; CMA REIT regulations</p>
+
+  <div class="grid-2 reveal" style="margin-top:2rem">
+    <div class="card card-red">
+      <div class="card-label">When REITs are better (be honest)</div>
+      <ul style="list-style:none;padding:0">
+        <li style="padding:0.3rem 0;font-size:0.85rem;color:var(--light)">&bull; You want instant liquidity (buy/sell on Tadawul)</li>
+        <li style="padding:0.3rem 0;font-size:0.85rem;color:var(--light)">&bull; You want zero entry cost</li>
+        <li style="padding:0.3rem 0;font-size:0.85rem;color:var(--light)">&bull; You don't care which building you own</li>
+        <li style="padding:0.3rem 0;font-size:0.85rem;color:var(--light)">&bull; You want CMA-regulated certainty</li>
+        <li style="padding:0.3rem 0;font-size:0.85rem;color:var(--light)">&bull; You want lower fees (&sim;0.5% vs 3%)</li>
+        <li style="padding:0.3rem 0;font-size:0.85rem;color:var(--light)">&bull; You want diversification across many properties</li>
+      </ul>
+    </div>
+    <div class="card card-gold">
+      <div class="card-label">When we're better</div>
+      <ul style="list-style:none;padding:0">
+        <li style="padding:0.3rem 0;font-size:0.85rem;color:var(--light)">&bull; You want to own a specific unit in a specific building</li>
+        <li style="padding:0.3rem 0;font-size:0.85rem;color:var(--light)">&bull; You want per-asset Shariah opinion (not fund-level)</li>
+        <li style="padding:0.3rem 0;font-size:0.85rem;color:var(--light)">&bull; You want direct Riyadh residential appreciation</li>
+        <li style="padding:0.3rem 0;font-size:0.85rem;color:var(--light)">&bull; You want to be a "micro-landlord" not a fund unit holder</li>
+        <li style="padding:0.3rem 0;font-size:0.85rem;color:var(--light)">&bull; Saudi REITs are underperforming (down 16&ndash;24% vs TASI)</li>
+        <li style="padding:0.3rem 0;font-size:0.85rem;color:var(--light)">&bull; You distrust fund managers (PE ratio 63x &mdash; overvalued)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="big-quote reveal-scale" style="margin-top:1.5rem">
+    <p>The real question to test: Does the emotional/psychological ownership of a specific asset matter enough to justify higher fees and less liquidity?</p>
+  </div>
+
+  <div class="card reveal" style="margin-top:1rem;background:var(--card2)">
+    <div class="card-label" style="color:var(--gold)">How to test this &mdash; cheaply</div>
+    <div class="card-desc">
+      <strong style="color:var(--white)">Option 1:</strong> Landing page with two choices: "Invest SAR 1,000 in a Riyadh apartment (specific unit, 7.5% yield, 5% RETT)" vs "Invest SAR 500 in a REIT (7-9% yield, instant liquidity)." Measure clicks.<br><br>
+      <strong style="color:var(--white)">Option 2:</strong> Survey 50+ potential investors: "What matters more &mdash; knowing exactly which property you own, or being able to sell instantly?"<br><br>
+      <strong style="color:var(--white)">Option 3:</strong> Talk to 10 HissaTech/Ghanem investors. Why did they choose fractional over REITs? What almost stopped them?
+    </div>
+  </div>
+
+  <h3 class="reveal" style="margin-top:2rem">Saudi REIT market context</h3>
+  <div class="stat-strip reveal">
+    <div class="stat"><span class="stat-val" style="color:var(--red)">$4B</span><span class="stat-label">Total REIT market cap</span></div>
+    <div class="stat"><span class="stat-val">20</span><span class="stat-label">Listed REITs</span></div>
+    <div class="stat"><span class="stat-val" style="color:var(--red)">63.2x</span><span class="stat-label">Industry P/E ratio</span></div>
+    <div class="stat"><span class="stat-val" style="color:var(--red)">&minus;16%</span><span class="stat-label">Avg vs TASI (12mo)</span></div>
+  </div>
+  <div class="card reveal" style="margin-top:1rem">
+    <div class="card-label" style="color:var(--red)">The REIT weakness we can exploit</div>
+    <div class="card-desc">Saudi REITs have <strong style="color:var(--white)">significantly underperformed</strong> the broader market. Al Rajhi REIT down 16%, Jadwa down 11%, Sedco and Alahli down 16% over 12 months while TASI gained 8%. The industry P/E ratio of 63.2x suggests overvaluation. Investor sentiment is declining. This creates an opening for an alternative that offers direct asset ownership with potentially better risk-adjusted returns.</div>
+  </div>
+  <p class="source reveal">Sources: SimplyWall.st Saudi RE sector; S&P Global Ratings; AGBI REIT analysis May 2024; Yahoo Finance Jadwa REIT</p>
+</section>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- 04 INVESTOR-SIDE OPEN QUESTIONS             -->
+<!-- ═══════════════════════════════════════════ -->
+<section id="investor">
+  <span class="section-label reveal-right">04 &mdash; Investor-Side Open Questions</span>
+  <h2 class="reveal-right">The hard questions we <em>haven't answered</em></h2>
+
+  <div class="q-card reveal">
+    <div class="q-card-q">Q1: How do multiple micro-investors make decisions on a single asset?</div>
+    <div class="q-card-section">
+      <div class="q-card-label">Options</div>
+      <div class="q-card-text">
+        <strong style="color:var(--white)">A. Platform decides (centralized PM)</strong> &mdash; We appoint a Fal-licensed property manager. Investors receive reports but don't vote on operational decisions. Simplest. Most practical for Saudi market where fractional governance has no legal precedent.<br><br>
+        <strong style="color:var(--white)">B. Investor vote (DAO-like)</strong> &mdash; Major decisions (sell property, change PM, capital expenditure) go to investor vote. Democratic but slow. Legal complexity in Saudi law.<br><br>
+        <strong style="color:var(--white)">C. Hybrid</strong> &mdash; Platform handles operations. Major exit/sale decisions require majority vote. Balances efficiency with investor control.
+      </div>
+    </div>
+    <div class="q-card-rec">
+      <p><strong>Recommendation:</strong> Option A for launch. Keep it simple. Add voting for exit decisions only (Option C) once you have traction. HissaTech and Ghanem both use centralized management &mdash; investors haven't demanded governance rights.</p>
+    </div>
+  </div>
+
+  <div class="q-card reveal">
+    <div class="q-card-q">Q2: Should we run the asset post-tokenization?</div>
+    <div class="q-card-section">
+      <div class="q-card-label">Options</div>
+      <div class="q-card-text">
+        <strong style="color:var(--white)">A. Third-party PM via Fal-licensed company</strong> &mdash; Cost: 2% of rent passed to investors. We stay asset-light. Focus on platform. This is the current plan.<br><br>
+        <strong style="color:var(--white)">B. In-house PM</strong> &mdash; Higher margin (keep the 2%) but requires hiring, licensing, and operational complexity. Distraction from core platform.<br><br>
+        <strong style="color:var(--white)">C. Developer retains PM</strong> &mdash; Cheapest for us. But: conflict of interest (developer already wanted to exit). Trust issue.
+      </div>
+    </div>
+    <div class="q-card-rec">
+      <p><strong>Recommendation:</strong> Option A. Third-party PM, pass cost through. You're building a platform, not a property management company. In-house PM is a Phase 3+ consideration once you manage 500+ units.</p>
+    </div>
+  </div>
+
+  <div class="q-card reveal">
+    <div class="q-card-q">Q3: How do investors exit? (The hardest question)</div>
+    <div class="q-card-section">
+      <div class="q-card-label">The problem</div>
+      <div class="q-card-text">Pre-REGA tokenization, there is no secondary market. Investors who want out have no clear path. This is the single biggest investor objection and the weakest point in the entire business case.</div>
+    </div>
+    <div class="q-card-section">
+      <div class="q-card-label">Possible solutions</div>
+      <div class="q-card-text">
+        <strong style="color:var(--white)">1. Fixed-term hold with scheduled exit</strong> &mdash; 3-year hold. At year 3, property is either sold (investors get proceeds) or re-offered. Clear, predictable. HissaTech uses 3-year contracts.<br><br>
+        <strong style="color:var(--white)">2. Annual property sale vote</strong> &mdash; Each year, investors vote: hold or sell. If majority says sell, property goes to market. Gives investors a voice without promising instant liquidity.<br><br>
+        <strong style="color:var(--white)">3. Platform matching (bulletin board)</strong> &mdash; Investor A wants to sell their fraction, Investor B wants to buy. Platform facilitates. Low tech, but requires buyer demand.<br><br>
+        <strong style="color:var(--white)">4. Platform buyback reserve</strong> &mdash; Set aside a % of placement fees as a buyback fund. Offer to buy back fractions at a discount (e.g., 90% of NAV). Capital intensive.<br><br>
+        <strong style="color:var(--white)">5. Wait for REGA tokenization</strong> &mdash; Once RER tokens are live, secondary market on blockchain. But timeline unknown.
+      </div>
+    </div>
+    <div class="q-card-rec">
+      <p><strong>Recommendation:</strong> Combine #1 and #3. Launch with 3-year fixed term. Add bulletin-board matching in Year 2. Be transparent: "This is not liquid. If you need instant exit, buy a REIT." Honesty builds trust. The REGA secondary market is the long-term solution but can't be promised.</p>
+    </div>
+  </div>
+
+  <div class="q-card reveal">
+    <div class="q-card-q">Q4: What's the investor's biggest fear?</div>
+    <div class="q-card-section">
+      <div class="q-card-label">Ranked by severity</div>
+      <div class="data-list" style="margin:0.5rem 0">
+        <div class="data-item"><span class="data-item-label"><strong style="color:var(--red)">#1</strong> &nbsp;"My money is stuck and I can't get it back"</span><span class="data-item-val">Liquidity risk</span></div>
+        <div class="data-item"><span class="data-item-label"><strong style="color:var(--orange)">#2</strong> &nbsp;"Who's actually managing my property?"</span><span class="data-item-val">Trust / governance</span></div>
+        <div class="data-item"><span class="data-item-label"><strong style="color:var(--gold)">#3</strong> &nbsp;"Is this Shariah compliant?"</span><span class="data-item-val">Religious compliance</span></div>
+        <div class="data-item"><span class="data-item-label"><strong style="color:var(--gold)">#4</strong> &nbsp;"Is this even regulated? What if the platform shuts down?"</span><span class="data-item-val">Regulatory risk</span></div>
+        <div class="data-item"><span class="data-item-label"><strong style="color:var(--gray)">#5</strong> &nbsp;"What if the tenant stops paying?"</span><span class="data-item-val">Operational risk</span></div>
+      </div>
+    </div>
+    <div class="q-card-section">
+      <div class="q-card-label">Mitigations</div>
+      <div class="q-card-text">
+        <strong style="color:var(--red)">#1 Liquidity:</strong> Fixed-term contract (no false promises). Bulletin board matching. Clear: "Not liquid. Not a REIT."<br>
+        <strong style="color:var(--orange)">#2 Trust:</strong> Fal-licensed third-party PM. Monthly reports. Ejar-tracked leases. Taqyeem appraisals.<br>
+        <strong style="color:var(--gold)">#3 Shariah:</strong> Per-asset Shariah opinion (AAOIFI-accredited scholar). Published with each listing.<br>
+        <strong style="color:var(--gold)">#4 Regulatory:</strong> REGA sandbox or SPV structure. Assets held in separate legal entity, not on our balance sheet.<br>
+        <strong style="color:var(--gray)">#5 Operations:</strong> Ejar-enforced leases. PM company handles collection. Insurance on vacancy.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- 05 REGA SANDBOX READINESS                   -->
+<!-- ═══════════════════════════════════════════ -->
+<section id="rega">
+  <span class="section-label reveal-left">05 &mdash; REGA Sandbox Readiness</span>
+  <h2 class="reveal-left">Are we ready for <em>April 30?</em></h2>
+  <p class="lead reveal">Checklist of what REGA likely requires for sandbox entry. Status: researching. Deadline: April 30, 2026 &mdash; <strong style="color:var(--red)">41 days away.</strong></p>
+
+  <div class="checklist reveal">
+    <div class="checklist-item">
+      <div class="checklist-check"></div>
+      <div class="checklist-body">
+        <div class="checklist-title">Legal entity established (CR registered)</div>
+        <div class="checklist-meta">Required for any REGA application. Estimated cost: SAR 2&ndash;5K. Time: 1&ndash;2 weeks.</div>
+      </div>
+    </div>
+    <div class="checklist-item">
+      <div class="checklist-check"></div>
+      <div class="checklist-body">
+        <div class="checklist-title">Co-founder with fintech/REGA expertise identified</div>
+        <div class="checklist-meta">Critical for regulatory navigation and credibility. No candidate yet.</div>
+        <div class="checklist-blocker">Blocker: Haven't started searching.</div>
+      </div>
+    </div>
+    <div class="checklist-item">
+      <div class="checklist-check"></div>
+      <div class="checklist-body">
+        <div class="checklist-title">Regulatory counsel engaged</div>
+        <div class="checklist-meta">Lawyer with REGA/CMA experience to review application and structure. Estimated cost: SAR 15&ndash;30K.</div>
+      </div>
+    </div>
+    <div class="checklist-item">
+      <div class="checklist-check"></div>
+      <div class="checklist-body">
+        <div class="checklist-title">PropTech sandbox application form obtained</div>
+        <div class="checklist-meta">Available from Saudi PropTech Hub (SPH). Need to understand exact requirements.</div>
+      </div>
+    </div>
+    <div class="checklist-item">
+      <div class="checklist-check"></div>
+      <div class="checklist-body">
+        <div class="checklist-title">REGA technical specifications reviewed</div>
+        <div class="checklist-meta">REGA publishing tokenization technical specs early 2026. Need to confirm compatibility with our architecture.</div>
+      </div>
+    </div>
+    <div class="checklist-item">
+      <div class="checklist-check"></div>
+      <div class="checklist-body">
+        <div class="checklist-title">Shariah compliance framework designed</div>
+        <div class="checklist-meta">Per-asset Shariah opinion process. Identify AAOIFI-accredited scholar. HissaTech uses Dr. Al-Shubaily.</div>
+      </div>
+    </div>
+    <div class="checklist-item">
+      <div class="checklist-check"></div>
+      <div class="checklist-body">
+        <div class="checklist-title">Technology architecture documented</div>
+        <div class="checklist-meta">Platform architecture, token standard, security model. Doesn't need to be built &mdash; needs to be designed.</div>
+      </div>
+    </div>
+    <div class="checklist-item done">
+      <div class="checklist-check">&#x2713;</div>
+      <div class="checklist-body">
+        <div class="checklist-title">Pilot deal identified (developer ready to list)</div>
+        <div class="checklist-meta">Developers have expressed willingness. Need to formalize one as pilot.</div>
+      </div>
+    </div>
+    <div class="checklist-item">
+      <div class="checklist-check"></div>
+      <div class="checklist-body">
+        <div class="checklist-title">Capital proof / funding plan</div>
+        <div class="checklist-meta">REGA may require proof of funding or capitalization. SAR 3&ndash;5M seed or bootstrap plan needed.</div>
+      </div>
+    </div>
+    <div class="checklist-item">
+      <div class="checklist-check"></div>
+      <div class="checklist-body">
+        <div class="checklist-title">Team plan (first 5 hires mapped)</div>
+        <div class="checklist-meta">CTO, Legal/Compliance, RE Acquisition, Product/UX, Marketing/Growth. At least identified, not necessarily hired.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="big-quote reveal">
+    <p style="font-size:clamp(0.85rem,1.5vw,1rem);color:var(--gold)">Honest assessment: 1 of 10 items done. 41 days to deadline. This is tight but not impossible if you focus on the sandbox application rather than building the product.</p>
+  </div>
+
+  <div class="card reveal" style="margin-top:1rem">
+    <div class="card-label" style="color:var(--gold)">If you miss the April 30 deadline</div>
+    <div class="card-desc">The sandbox may reopen (REGA ran a 2nd round in Feb 2026). Alternatively, launch with SPV/LLC structure (like HissaTech) without sandbox approval. SPV is slower to scale but doesn't require REGA approval. The sandbox is the <em>best</em> path, not the <em>only</em> path.</div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- 06 KILL/VALIDATE MATRIX                     -->
+<!-- ═══════════════════════════════════════════ -->
+<section id="killvalidate">
+  <span class="section-label reveal-right">06 &mdash; Kill / Validate Matrix</span>
+  <h2 class="reveal-right">What needs to <em>die or survive</em></h2>
+
+  <div class="compare-cols reveal">
+    <div class="compare-col wait">
+      <h3>Kill signals (stop if)</h3>
+      <ul>
+        <li class="validated">Developers refuse to pay 4&ndash;5%</li>
+        <li>Investors consistently say "I'd just buy a REIT" with no counter-argument landing</li>
+        <li>REGA sandbox rejected AND SPV structure is legally unviable</li>
+        <li>Cannot solve liquidity/exit &mdash; no path to secondary market or structured exit</li>
+        <li>No co-founder with REGA/fintech experience found by April 2026</li>
+        <li>First deal takes &gt;60 days to fill (proves no investor demand)</li>
+      </ul>
+    </div>
+    <div class="compare-col go">
+      <h3>Validate signals (proceed if)</h3>
+      <ul>
+        <li style="color:var(--green);font-weight:600">&#x2713; 3+ developers say yes to 4&ndash;5% &mdash; DONE</li>
+        <li>50+ survey respondents prefer specific-asset ownership over REIT</li>
+        <li>REGA sandbox application submitted by April 30</li>
+        <li>First pilot deal term sheet signed with a developer</li>
+        <li>Legal opinion confirms SPV structure viable without sandbox</li>
+        <li>Co-founder identified with regulatory credibility</li>
+        <li>First deal fills in &lt;21 days (matches HissaTech benchmark)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="big-quote reveal-scale">
+    <p>The next assumption to kill-test: "Do investors care enough about specific-asset ownership to accept higher fees and less liquidity vs REITs?"</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- 07 DECISION GATES                           -->
+<!-- ═══════════════════════════════════════════ -->
+<section id="gates">
+  <span class="section-label reveal-left">07 &mdash; Decision Gates</span>
+  <h2 class="reveal-left">Time-bound <em>go/no-go</em> points</h2>
+  <p class="lead reveal">Each gate has a clear question, criteria, and cost. If a gate fails, stop or pivot &mdash; don't push through on hope.</p>
+
+  <div class="gate-timeline reveal">
+    <div class="gate">
+      <div class="gate-marker">1</div>
+      <div class="gate-content">
+        <div class="gate-date">Gate 1 &mdash; March 2026 (NOW)</div>
+        <div class="gate-question">Can you articulate why investors should choose you over REITs?</div>
+        <div class="gate-criteria">
+          <strong style="color:var(--white)">Must be true:</strong> You have a clear, honest answer to "why not just buy a REIT?" that doesn't rely on hand-waving about "blockchain" or "tokenization."<br>
+          <strong style="color:var(--white)">How to test:</strong> Write the answer. Show it to 5 people. If they find it compelling, proceed.<br>
+          <strong style="color:var(--white)">If it fails:</strong> The value prop isn't strong enough. Pivot to a different angle or stop.
+        </div>
+        <div class="gate-cost">Cost: SAR 0 + 5 hours. Fully reversible.</div>
+      </div>
+    </div>
+
+    <div class="gate">
+      <div class="gate-marker">2</div>
+      <div class="gate-content">
+        <div class="gate-date">Gate 2 &mdash; April 15, 2026</div>
+        <div class="gate-question">REGA sandbox application ready? Co-founder identified?</div>
+        <div class="gate-criteria">
+          <strong style="color:var(--white)">Must be true:</strong> Application form completed. Legal entity registered. Regulatory counsel engaged. At least one co-founder candidate with REGA/fintech experience.<br>
+          <strong style="color:var(--white)">How to test:</strong> Is the application ready to submit? Yes or no.<br>
+          <strong style="color:var(--white)">If it fails:</strong> Submit to next sandbox round. Launch with SPV structure. Delay is acceptable; no sandbox is not fatal.
+        </div>
+        <div class="gate-cost">Cost: SAR 20&ndash;40K (legal + entity). Partially reversible.</div>
+      </div>
+    </div>
+
+    <div class="gate">
+      <div class="gate-marker">3</div>
+      <div class="gate-content">
+        <div class="gate-date">Gate 3 &mdash; June 2026</div>
+        <div class="gate-question">Is there real investor demand signal?</div>
+        <div class="gate-criteria">
+          <strong style="color:var(--white)">Must be true:</strong> Landing page with 500+ signups, or survey with 50+ "would invest" responses, or LOIs from institutional investors (e.g., via Manafa/Forus).<br>
+          <strong style="color:var(--white)">How to test:</strong> Run targeted ads (SAR 5&ndash;10K budget) to a landing page. Measure conversion. Or leverage partner platforms for distribution test.<br>
+          <strong style="color:var(--white)">If it fails:</strong> Investor demand is not there. The REIT comparison wins. Stop or pivot to a B2B-only model (developer exit without fractional investors &mdash; e.g., institutional buyer network).
+        </div>
+        <div class="gate-cost">Cost: SAR 10&ndash;20K (landing page + ads). Reversible.</div>
+      </div>
+    </div>
+
+    <div class="gate">
+      <div class="gate-marker">4</div>
+      <div class="gate-content">
+        <div class="gate-date">Gate 4 &mdash; September 2026</div>
+        <div class="gate-question">First pilot deal structured and funded?</div>
+        <div class="gate-criteria">
+          <strong style="color:var(--white)">Must be true:</strong> Developer lists a unit. Legal structure (SPV or sandbox) live. Fractions offered to investors. Deal fills within 30 days.<br>
+          <strong style="color:var(--white)">How to test:</strong> Did real investors put real money in? How fast?<br>
+          <strong style="color:var(--white)">If it fails:</strong> The model doesn't work in practice. Cut losses. Total exposure at this point: SAR 50&ndash;100K + 6 months of part-time work. Painful but survivable.
+        </div>
+        <div class="gate-cost">Cost: SAR 50&ndash;100K cumulative. Hard to reverse &mdash; this is the commitment gate.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="big-quote reveal-scale" style="margin-top:1.5rem">
+    <p>Total cost to reach Gate 3 (real demand signal): SAR 30&ndash;60K + part-time effort. That's the price of knowing whether this is real or not. Everything before Gate 4 is reversible.</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>Internal Decision Framework &mdash; Developer Exit Accelerator &mdash; March 2026</p>
+  <p style="margin-top:0.6rem">Not for external distribution.</p>
+</footer>
+
+<script>
+// PROGRESS BAR
+const progressBar=document.getElementById('progressBar');
+function updateProgress(){const h=document.documentElement.scrollHeight-window.innerHeight;const p=(window.scrollY/h)*100;progressBar.style.width=p+'%'}
+window.addEventListener('scroll',updateProgress,{passive:true});
+
+// SCROLL REVEAL
+const obs=new IntersectionObserver(e=>{e.forEach(el=>{if(el.isIntersecting)el.target.classList.add('visible')})},{threshold:0.08,rootMargin:'0px 0px -30px 0px'});
+document.querySelectorAll('.reveal,.reveal-left,.reveal-right,.reveal-scale').forEach(el=>obs.observe(el));
+
+// NAV SCROLL + BACK TO TOP
+const nav=document.getElementById('nav'),backTop=document.getElementById('backTop');
+window.addEventListener('scroll',()=>{nav.classList.toggle('scrolled',scrollY>50);backTop.classList.toggle('show',scrollY>500)},{passive:true});
+
+// ACTIVE NAV
+const sections=document.querySelectorAll('section[id]');
+const navLinks=document.querySelectorAll('.nav-links a[data-section]');
+const navObs=new IntersectionObserver(e=>{e.forEach(el=>{if(el.isIntersecting){navLinks.forEach(l=>l.classList.remove('active'));const lk=document.querySelector('.nav-links a[data-section="'+el.target.id+'"]');if(lk)lk.classList.add('active')}})},{threshold:0.15,rootMargin:'-60px 0px -50% 0px'});
+sections.forEach(s=>navObs.observe(s));
+
+// HAMBURGER
+const hamburger=document.getElementById('hamburger'),mobileMenu=document.getElementById('mobileMenu');
+hamburger.addEventListener('click',()=>{hamburger.classList.toggle('open');mobileMenu.classList.toggle('open');document.body.style.overflow=mobileMenu.classList.contains('open')?'hidden':''});
+document.querySelectorAll('.mm-link').forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();hamburger.classList.remove('open');mobileMenu.classList.remove('open');document.body.style.overflow='';document.querySelector(a.getAttribute('href')).scrollIntoView({behavior:'smooth'})})});
+
+// SMOOTH SCROLL
+document.querySelectorAll('nav a[href^="#"]').forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();document.querySelector(a.getAttribute('href')).scrollIntoView({behavior:'smooth'})})});
+
+// ACCORDION TOGGLES
+document.querySelectorAll('.accordion-toggle').forEach(t=>{t.addEventListener('click',()=>{t.classList.toggle('open');t.nextElementSibling.classList.toggle('open')})});
+
+// CHECKLIST INTERACTIVE
+document.querySelectorAll('.checklist-check').forEach(c=>{c.addEventListener('click',()=>{const item=c.closest('.checklist-item');item.classList.toggle('done');c.innerHTML=item.classList.contains('done')?'&#x2713;':''})});
+</script>
+</body>
+</html>
